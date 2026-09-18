@@ -145,14 +145,16 @@ class PaceZone:
 
     def __hash__(self) -> int:
         """Return hash value for dictionary and set storage."""
-        return hash((
-            self.__class__,
-            self._zone_name,
-            self._nominal,
-            self._target_low,
-            self._target_high,
-            self._percentage_vdot,
-        ))
+        return hash(
+            (
+                self.__class__,
+                self._zone_name,
+                self._nominal,
+                self._target_low,
+                self._target_high,
+                self._percentage_vdot,
+            )
+        )
 
     def __repr__(self) -> str:
         """Produce reproducible technical representation."""
@@ -189,9 +191,7 @@ class VDOTPrescription:
             raise InvalidVDOTError(f"VDOT must be numeric, received: {type(vdot).__name__}.")
         vdot_val = round(float(vdot), 2)
         if vdot_val < 30.0 or vdot_val > 85.0:
-            raise InvalidVDOTError(
-                f"VDOT {vdot_val} is outside physiological boundaries [30.0, 85.0]."
-            )
+            raise InvalidVDOTError(f"VDOT {vdot_val} is outside physiological boundaries [30.0, 85.0].")
 
         if not isinstance(zones, dict) or not zones:
             raise ValueError("zones must be a non-empty dictionary of PaceZone objects.")
@@ -284,10 +284,10 @@ class VDOTCalculator:
 
     # Daniels standard %VO2max training intensities
     ZONE_FRACTIONS: Dict[str, float] = {
-        "EASY": 0.70,        # Easy/Aerobic Recovery (~65-74% VO2max)
-        "MARATHON": 0.82,    # Aerobic Threshold (~80-84% VO2max)
-        "THRESHOLD": 0.88,   # Lactate Threshold (~88% VO2max)
-        "INTERVAL": 0.98,    # VO2max Intervals (~95-100% VO2max)
+        "EASY": 0.70,  # Easy/Aerobic Recovery (~65-74% VO2max)
+        "MARATHON": 0.82,  # Aerobic Threshold (~80-84% VO2max)
+        "THRESHOLD": 0.88,  # Lactate Threshold (~88% VO2max)
+        "INTERVAL": 0.98,  # VO2max Intervals (~95-100% VO2max)
         "REPETITION": 1.05,  # Anaerobic speed (~105-110% of vVDOT)
     }
 
@@ -308,11 +308,7 @@ class VDOTCalculator:
         Raises:
             PhysiologicalCalculationError: If inputs are non-positive or result is out of range.
         """
-        if (
-            not isinstance(distance_meters, (int, float))
-            or distance_meters <= 0.0
-            or isinstance(distance_meters, bool)
-        ):
+        if not isinstance(distance_meters, (int, float)) or distance_meters <= 0.0 or isinstance(distance_meters, bool):
             raise PhysiologicalCalculationError(
                 f"distance_meters must be strictly positive, received: {distance_meters!r}."
             )
@@ -333,11 +329,7 @@ class VDOTCalculator:
         vo2_cost = -4.60 + 0.182258 * velocity_m_per_min + 0.000104 * (velocity_m_per_min**2)
 
         # Fraction of VO2max sustainable for this duration
-        fraction_vo2max = (
-            0.8
-            + 0.1894393 * math.exp(-0.012778 * time_min)
-            + 0.2989558 * math.exp(-0.1932605 * time_min)
-        )
+        fraction_vo2max = 0.8 + 0.1894393 * math.exp(-0.012778 * time_min) + 0.2989558 * math.exp(-0.1932605 * time_min)
 
         raw_vdot = vo2_cost / fraction_vo2max
         rounded_vdot = round(raw_vdot, 2)
@@ -384,8 +376,7 @@ class VDOTCalculator:
         vdot_val = round(float(vdot), 2)
         if vdot_val < self.MIN_VDOT or vdot_val > self.MAX_VDOT:
             raise InvalidVDOTError(
-                f"VDOT {vdot_val} is outside physiological boundaries "
-                f"[{self.MIN_VDOT}, {self.MAX_VDOT}]."
+                f"VDOT {vdot_val} is outside physiological boundaries " f"[{self.MIN_VDOT}, {self.MAX_VDOT}]."
             )
 
         # Baseline velocity at 100% of VDOT

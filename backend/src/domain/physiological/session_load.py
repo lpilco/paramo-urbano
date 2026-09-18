@@ -66,13 +66,9 @@ class SessionLoad:
             raise TypeError(f"method must be a LoadCalculationMethod enum, received: {method!r}.")
 
         if not isinstance(duration_minutes, (int, float)) or isinstance(duration_minutes, bool):
-            raise InvalidLoadError(
-                f"duration_minutes must be numeric, received: {type(duration_minutes).__name__}."
-            )
+            raise InvalidLoadError(f"duration_minutes must be numeric, received: {type(duration_minutes).__name__}.")
         if duration_minutes <= 0.0:
-            raise InvalidLoadError(
-                f"duration_minutes must be strictly positive, received: {duration_minutes}."
-            )
+            raise InvalidLoadError(f"duration_minutes must be strictly positive, received: {duration_minutes}.")
 
         if intensity_factor is not None:
             if not isinstance(intensity_factor, (int, float)) or isinstance(intensity_factor, bool):
@@ -80,9 +76,7 @@ class SessionLoad:
                     f"intensity_factor must be numeric, received: {type(intensity_factor).__name__}."
                 )
             if intensity_factor < 0.0:
-                raise InvalidLoadError(
-                    f"intensity_factor cannot be negative, received: {intensity_factor}."
-                )
+                raise InvalidLoadError(f"intensity_factor cannot be negative, received: {intensity_factor}.")
             self._intensity_factor: Optional[float] = round(float(intensity_factor), 4)
         else:
             self._intensity_factor = None
@@ -128,13 +122,15 @@ class SessionLoad:
 
     def __hash__(self) -> int:
         """Return hash value for dictionary and set operations."""
-        return hash((
-            self.__class__,
-            self._load_value,
-            self._method,
-            self._duration_minutes,
-            self._intensity_factor,
-        ))
+        return hash(
+            (
+                self.__class__,
+                self._load_value,
+                self._method,
+                self._duration_minutes,
+                self._intensity_factor,
+            )
+        )
 
     def __repr__(self) -> str:
         """Produce reproducible technical representation."""
@@ -178,13 +174,9 @@ class SessionLoadCalculator:
             InvalidLoadError: If `duration_minutes` is <= 0 or non-numeric.
         """
         if not isinstance(duration_minutes, (int, float)) or isinstance(duration_minutes, bool):
-            raise InvalidLoadError(
-                f"duration_minutes must be numeric, received: {type(duration_minutes).__name__}."
-            )
+            raise InvalidLoadError(f"duration_minutes must be numeric, received: {type(duration_minutes).__name__}.")
         if duration_minutes <= 0:
-            raise InvalidLoadError(
-                f"duration_minutes must be strictly positive, received: {duration_minutes}."
-            )
+            raise InvalidLoadError(f"duration_minutes must be strictly positive, received: {duration_minutes}.")
 
         if isinstance(rpe, SessionRPE):
             rpe_val = rpe.value
@@ -234,25 +226,17 @@ class SessionLoadCalculator:
             InvalidSpeedError: If speeds are <= 0 or outside physical limits.
         """
         if not isinstance(duration_seconds, int) or isinstance(duration_seconds, bool):
-            raise InvalidLoadError(
-                f"duration_seconds must be an integer, received: {type(duration_seconds).__name__}."
-            )
+            raise InvalidLoadError(f"duration_seconds must be an integer, received: {type(duration_seconds).__name__}.")
         if duration_seconds <= 0:
-            raise InvalidLoadError(
-                f"duration_seconds must be strictly positive, received: {duration_seconds}."
-            )
+            raise InvalidLoadError(f"duration_seconds must be strictly positive, received: {duration_seconds}.")
 
         actual_speed = float(speed_mps.mps) if isinstance(speed_mps, Speed) else float(speed_mps)
         ftp_speed = (
-            float(threshold_speed_mps.mps)
-            if isinstance(threshold_speed_mps, Speed)
-            else float(threshold_speed_mps)
+            float(threshold_speed_mps.mps) if isinstance(threshold_speed_mps, Speed) else float(threshold_speed_mps)
         )
 
         if actual_speed <= 0.0 or actual_speed > Speed.MAX_MPS:
-            raise InvalidSpeedError(
-                f"speed_mps must be in range (0.0, {Speed.MAX_MPS}], received: {actual_speed}."
-            )
+            raise InvalidSpeedError(f"speed_mps must be in range (0.0, {Speed.MAX_MPS}], received: {actual_speed}.")
         if ftp_speed <= 0.0 or ftp_speed > Speed.MAX_MPS:
             raise InvalidSpeedError(
                 f"threshold_speed_mps must be in range (0.0, {Speed.MAX_MPS}], received: {ftp_speed}."
@@ -296,30 +280,19 @@ class SessionLoadCalculator:
             InvalidHeartRateError: If heart rates are outside biological limits [30, 240].
         """
         if not isinstance(duration_seconds, int) or isinstance(duration_seconds, bool):
-            raise InvalidLoadError(
-                f"duration_seconds must be an integer, received: {type(duration_seconds).__name__}."
-            )
+            raise InvalidLoadError(f"duration_seconds must be an integer, received: {type(duration_seconds).__name__}.")
         if duration_seconds <= 0:
-            raise InvalidLoadError(
-                f"duration_seconds must be strictly positive, received: {duration_seconds}."
-            )
+            raise InvalidLoadError(f"duration_seconds must be strictly positive, received: {duration_seconds}.")
 
         hr_val = avg_hr.bpm if isinstance(avg_hr, HeartRate) else avg_hr
-        lthr_val = (
-            lactate_threshold_hr.bpm
-            if isinstance(lactate_threshold_hr, HeartRate)
-            else lactate_threshold_hr
-        )
+        lthr_val = lactate_threshold_hr.bpm if isinstance(lactate_threshold_hr, HeartRate) else lactate_threshold_hr
 
         for name, val in [("avg_hr", hr_val), ("lactate_threshold_hr", lthr_val)]:
             if not isinstance(val, int) or isinstance(val, bool):
-                raise InvalidHeartRateError(
-                    f"{name} must be an integer, received: {type(val).__name__} ({val!r})."
-                )
+                raise InvalidHeartRateError(f"{name} must be an integer, received: {type(val).__name__} ({val!r}).")
             if val < HeartRate.MIN_BPM or val > HeartRate.MAX_BPM:
                 raise InvalidHeartRateError(
-                    f"{name} {val} bpm is outside biological boundaries "
-                    f"[{HeartRate.MIN_BPM}, {HeartRate.MAX_BPM}]."
+                    f"{name} {val} bpm is outside biological boundaries " f"[{HeartRate.MIN_BPM}, {HeartRate.MAX_BPM}]."
                 )
 
         intensity_factor = float(hr_val) / float(lthr_val)

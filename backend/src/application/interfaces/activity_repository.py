@@ -53,9 +53,7 @@ class ActivityRepository(ABC):
         pass
 
     @abstractmethod
-    async def list_by_athlete(
-        self, athlete_profile_id: str, limit: int = 50, offset: int = 0
-    ) -> List[Activity]:
+    async def list_by_athlete(self, athlete_profile_id: str, limit: int = 50, offset: int = 0) -> List[Activity]:
         """Query a paginated chronological list of activities for an athlete profile.
 
         Args:
@@ -69,9 +67,7 @@ class ActivityRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_summary_by_activity_id(
-        self, activity_id: str
-    ) -> Optional[Dict[str, Any]]:
+    async def get_summary_by_activity_id(self, activity_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve the telemetry summary dictionary for a given activity.
 
         Args:

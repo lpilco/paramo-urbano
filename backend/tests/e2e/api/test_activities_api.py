@@ -7,9 +7,7 @@ from typing import Dict
 import pytest
 from httpx import AsyncClient
 
-FIXTURES_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../../data/fixtures")
-)
+FIXTURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../data/fixtures"))
 
 
 @pytest.mark.asyncio

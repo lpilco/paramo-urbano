@@ -5,6 +5,9 @@
 
 import { apiFetch } from './apiClient';
 import type {
+  BatchManualActivitiesRequest,
+  BatchManualActivitiesResponse,
+  JobStatusResponse,
   ManualActivityRequest,
   ManualActivityResponse,
   PaginatedActivitiesResponse,
@@ -12,7 +15,7 @@ import type {
 } from '../types';
 
 /**
- * Upload raw telemetry file (.FIT, .GPX, .CSV) asynchronously.
+ * Upload raw telemetry file (.FIT, .GPX, .CSV, .JSON) asynchronously.
  *
  * @async
  * @param {File} file - Telemetry file to upload (max 25MB)
@@ -29,6 +32,17 @@ export async function uploadActivityFile(file: File): Promise<UploadActivityResp
 }
 
 /**
+ * Query status of an asynchronous telemetry ingestion job.
+ *
+ * @async
+ * @param {string} jobId - Unique job identifier
+ * @returns {Promise<JobStatusResponse>} Current ingestion status and progress
+ */
+export async function getJobStatus(jobId: string): Promise<JobStatusResponse> {
+  return apiFetch<JobStatusResponse>(`/activities/jobs/${encodeURIComponent(jobId)}`);
+}
+
+/**
  * Log manual workout session using deterministic Foster sRPE.
  *
  * @async
@@ -41,6 +55,23 @@ export async function logManualActivity(
   return apiFetch<ManualActivityResponse>('/activities/manual', {
     method: 'POST',
     body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Log a batch of manual workout sessions atomically.
+ *
+ * @async
+ * @param {ManualActivityRequest[]} items
+ * @returns {Promise<BatchManualActivitiesResponse>}
+ */
+export async function logBatchManualActivities(
+  items: ManualActivityRequest[]
+): Promise<BatchManualActivitiesResponse> {
+  const payload: BatchManualActivitiesRequest = { items };
+  return apiFetch<BatchManualActivitiesResponse>('/activities/manual/batch', {
+    method: 'POST',
+    body: JSON.stringify(payload),
   });
 }
 

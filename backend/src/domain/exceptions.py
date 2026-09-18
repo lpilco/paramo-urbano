@@ -158,4 +158,3 @@ class AuthenticationError(DomainError):
     """Raised when authentication fails due to invalid credentials or expired/malformed token."""
 
     pass
-

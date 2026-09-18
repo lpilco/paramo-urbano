@@ -1,13 +1,20 @@
 """FastAPI router for activities: multipart upload, manual logging, and paginated listing."""
 
 from typing import Optional
-from fastapi import APIRouter, Depends, File, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 from backend.src.application.dtos.activities import (
+    BatchManualActivitiesRequest,
+    BatchManualActivitiesResponse,
+    JobStatusResponse,
     ManualActivityRequest,
     ManualActivityResponse,
     PaginatedActivitiesResponse,
     UploadActivityResponse,
+)
+from backend.src.application.interfaces.job_repository import IngestionJobRepository
+from backend.src.application.use_cases.activities.batch_log_manual_activities import (
+    BatchLogManualActivitiesUseCase,
 )
 from backend.src.application.use_cases.activities.get_athlete_activities import (
     GetAthleteActivitiesUseCase,
@@ -20,6 +27,8 @@ from backend.src.application.use_cases.activities.queue_activity_upload import (
 )
 from backend.src.interfaces.api.dependencies import (
     get_athlete_activities_use_case,
+    get_batch_log_manual_activities_use_case,
+    get_job_repository,
     get_log_manual_activity_use_case,
     get_queue_activity_upload_use_case,
 )
@@ -28,6 +37,8 @@ from backend.src.interfaces.api.middlewares.auth_middleware import (
 )
 
 router = APIRouter(prefix="/activities", tags=["Activities"])
+
+MAX_UPLOAD_BYTES: int = 25 * 1024 * 1024  # 25 Megabytes
 
 
 @router.post(
@@ -43,6 +54,12 @@ async def upload_activity(
 ) -> UploadActivityResponse:
     """Ingest raw binary telemetry file (.FIT, .GPX, .CSV) asynchronously."""
     file_bytes = await file.read()
+    if len(file_bytes) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Uploaded file exceeds maximum permissible limit of 25 MB ({len(file_bytes)} bytes).",
+        )
+
     file_name = file.filename or "telemetry_upload.bin"
     mime_type = file.content_type or "application/octet-stream"
 
@@ -51,6 +68,37 @@ async def upload_activity(
         file_name=file_name,
         file_bytes=file_bytes,
         mime_type=mime_type,
+    )
+
+
+@router.get(
+    "/jobs/{job_id}",
+    response_model=JobStatusResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Query asynchronous ingestion job status",
+)
+async def get_job_status(
+    job_id: str,
+    athlete_profile_id: str = Depends(get_current_athlete_profile_id),
+    job_repo: IngestionJobRepository = Depends(get_job_repository),
+) -> JobStatusResponse:
+    """Retrieve current processing state and progress for a queued telemetry job."""
+    job = await job_repo.get_job_by_id(job_id)
+    if job is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Ingestion job '{job_id}' not found.",
+        )
+    return JobStatusResponse(
+        job_id=job["id"],
+        athlete_profile_id=job["athlete_profile_id"],
+        file_name=job["file_name"],
+        file_hash_sha256=job["file_hash_sha256"],
+        status=job["status"],
+        progress_percent=job["progress_percent"],
+        error_message=job.get("error_message"),
+        created_at=str(job["created_at"]),
+        updated_at=str(job["updated_at"]),
     )
 
 
@@ -66,6 +114,24 @@ async def log_manual_activity(
     use_case: LogManualActivityUseCase = Depends(get_log_manual_activity_use_case),
 ) -> ManualActivityResponse:
     """Log manual workout session and compute Foster sRPE training load."""
+    return await use_case.execute(
+        athlete_profile_id=athlete_profile_id,
+        request=request,
+    )
+
+
+@router.post(
+    "/manual/batch",
+    response_model=BatchManualActivitiesResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Log a batch of manual non-GPS sessions in a single relational transaction",
+)
+async def log_manual_activities_batch(
+    request: BatchManualActivitiesRequest,
+    athlete_profile_id: str = Depends(get_current_athlete_profile_id),
+    use_case: BatchLogManualActivitiesUseCase = Depends(get_batch_log_manual_activities_use_case),
+) -> BatchManualActivitiesResponse:
+    """Log multiple manual sessions atomically with cumulative Foster & Banister EWMA calculation."""
     return await use_case.execute(
         athlete_profile_id=athlete_profile_id,
         request=request,

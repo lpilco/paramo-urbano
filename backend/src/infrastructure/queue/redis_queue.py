@@ -99,9 +99,7 @@ class RedisJobQueue(JobQueueProducer, JobQueueConsumer):
 
         await self._memory_queue.put(serialized)
 
-    async def dequeue_telemetry_job(
-        self, timeout_seconds: int = 1
-    ) -> Optional[Dict[str, Any]]:
+    async def dequeue_telemetry_job(self, timeout_seconds: int = 1) -> Optional[Dict[str, Any]]:
         """Dequeue the next processing job from the queue."""
         client = await self._get_client()
 
@@ -116,9 +114,7 @@ class RedisJobQueue(JobQueueProducer, JobQueueConsumer):
                 self.use_in_memory = True
 
         try:
-            raw_payload = await asyncio.wait_for(
-                self._memory_queue.get(), timeout=float(timeout_seconds)
-            )
+            raw_payload = await asyncio.wait_for(self._memory_queue.get(), timeout=float(timeout_seconds))
             return json.loads(raw_payload)
         except (asyncio.TimeoutError, TimeoutError):
             return None

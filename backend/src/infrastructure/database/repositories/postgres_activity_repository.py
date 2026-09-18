@@ -5,11 +5,12 @@ import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from backend.src.application.interfaces.activity_repository import ActivityRepository
 from backend.src.domain.models.activity import Activity, CanonicalActivityRecord
 from backend.src.domain.models.enums import ProcessingStatus, SourceType, SportCategory
-from backend.src.domain.models.value_objects import SessionRPE, Sha256Hash
+from backend.src.domain.models.value_objects import HeartRate, SessionRPE, Sha256Hash
 from backend.src.infrastructure.database.models.activity import (
     ActivityModel,
     ActivityTelemetrySummaryModel,
@@ -30,11 +31,7 @@ class PostgresActivityRepository(ActivityRepository):
     def _to_domain(self, model: ActivityModel) -> Activity:
         """Map an ActivityModel ORM instance to a domain Activity entity."""
         raw_source = model.source_type.replace("FILE_", "")
-        source_type = (
-            SourceType(raw_source)
-            if raw_source in SourceType.__members__
-            else SourceType.FIT
-        )
+        source_type = SourceType(raw_source) if raw_source in SourceType.__members__ else SourceType.FIT
 
         raw_status = model.processing_status
         if raw_status == "COMPLETED":
@@ -48,6 +45,9 @@ class PostgresActivityRepository(ActivityRepository):
                 else ProcessingStatus.PROCESSED
             )
 
+        summary = getattr(model, "telemetry_summary", None)
+        avg_hr_vo = HeartRate(summary.avg_hr) if summary is not None and summary.avg_hr is not None else None
+
         return Activity(
             activity_id=model.id,
             athlete_profile_id=model.athlete_profile_id,
@@ -57,25 +57,14 @@ class PostgresActivityRepository(ActivityRepository):
             duration_seconds=model.duration_seconds,
             distance_meters=float(model.distance_meters),
             elevation_gain_meters=float(model.elevation_gain_meters),
-            session_rpe=(
-                SessionRPE(model.session_rpe)
-                if model.session_rpe is not None
-                else None
-            ),
-            foster_load=(
-                float(model.foster_load) if model.foster_load is not None else None
-            ),
-            tss_score=(
-                float(model.tss_score) if model.tss_score is not None else None
-            ),
-            file_hash=(
-                Sha256Hash(model.file_hash_sha256)
-                if model.file_hash_sha256
-                else None
-            ),
+            session_rpe=(SessionRPE(model.session_rpe) if model.session_rpe is not None else None),
+            foster_load=(float(model.foster_load) if model.foster_load is not None else None),
+            tss_score=(float(model.tss_score) if model.tss_score is not None else None),
+            file_hash=(Sha256Hash(model.file_hash_sha256) if model.file_hash_sha256 else None),
             processing_status=status,
             notes=model.notes,
             created_at=model.created_at,
+            avg_hr=avg_hr_vo,
         )
 
     async def save(
@@ -89,14 +78,8 @@ class PostgresActivityRepository(ActivityRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
 
-        file_hash_val = (
-            activity.file_hash.value if activity.file_hash is not None else None
-        )
-        rpe_val = (
-            activity.session_rpe.value
-            if activity.session_rpe is not None
-            else None
-        )
+        file_hash_val = activity.file_hash.value if activity.file_hash is not None else None
+        rpe_val = activity.session_rpe.value if activity.session_rpe is not None else None
 
         if model is None:
             model = ActivityModel(
@@ -146,12 +129,8 @@ class PostgresActivityRepository(ActivityRepository):
 
             avg_hr_val = summary.avg_hr.bpm if summary.avg_hr is not None else None
             max_hr_val = summary.max_hr.bpm if summary.max_hr is not None else None
-            avg_speed_val = (
-                summary.avg_speed.mps if summary.avg_speed is not None else None
-            )
-            max_speed_val = (
-                summary.max_speed.mps if summary.max_speed is not None else None
-            )
+            avg_speed_val = summary.avg_speed.mps if summary.avg_speed is not None else None
+            max_speed_val = summary.max_speed.mps if summary.max_speed is not None else None
 
             if sum_model is None:
                 sum_model = ActivityTelemetrySummaryModel(
@@ -180,7 +159,11 @@ class PostgresActivityRepository(ActivityRepository):
 
     async def get_by_id(self, activity_id: str) -> Optional[Activity]:
         """Retrieve an activity by its unique identifier."""
-        stmt = select(ActivityModel).where(ActivityModel.id == activity_id)
+        stmt = (
+            select(ActivityModel)
+            .options(selectinload(ActivityModel.telemetry_summary))
+            .where(ActivityModel.id == activity_id)
+        )
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
@@ -189,18 +172,15 @@ class PostgresActivityRepository(ActivityRepository):
 
     async def exists_by_hash(self, file_hash_sha256: str) -> bool:
         """Check whether an activity with the specified SHA-256 hash already exists."""
-        stmt = select(ActivityModel.id).where(
-            ActivityModel.file_hash_sha256 == file_hash_sha256.lower()
-        )
+        stmt = select(ActivityModel.id).where(ActivityModel.file_hash_sha256 == file_hash_sha256.lower())
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none() is not None
 
-    async def list_by_athlete(
-        self, athlete_profile_id: str, limit: int = 50, offset: int = 0
-    ) -> List[Activity]:
+    async def list_by_athlete(self, athlete_profile_id: str, limit: int = 50, offset: int = 0) -> List[Activity]:
         """Query a paginated chronological list of activities for an athlete profile."""
         stmt = (
             select(ActivityModel)
+            .options(selectinload(ActivityModel.telemetry_summary))
             .where(ActivityModel.athlete_profile_id == athlete_profile_id)
             .order_by(ActivityModel.started_at.desc())
             .limit(limit)
@@ -210,13 +190,9 @@ class PostgresActivityRepository(ActivityRepository):
         models = result.scalars().all()
         return [self._to_domain(m) for m in models]
 
-    async def get_summary_by_activity_id(
-        self, activity_id: str
-    ) -> Optional[Dict[str, Any]]:
+    async def get_summary_by_activity_id(self, activity_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve the telemetry summary dictionary for a given activity."""
-        stmt = select(ActivityTelemetrySummaryModel).where(
-            ActivityTelemetrySummaryModel.activity_id == activity_id
-        )
+        stmt = select(ActivityTelemetrySummaryModel).where(ActivityTelemetrySummaryModel.activity_id == activity_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
@@ -226,16 +202,10 @@ class PostgresActivityRepository(ActivityRepository):
             "activity_id": model.activity_id,
             "avg_hr": model.avg_hr,
             "max_hr": model.max_hr,
-            "avg_speed_ms": (
-                float(model.avg_speed_ms) if model.avg_speed_ms is not None else None
-            ),
-            "max_speed_ms": (
-                float(model.max_speed_ms) if model.max_speed_ms is not None else None
-            ),
+            "avg_speed_ms": (float(model.avg_speed_ms) if model.avg_speed_ms is not None else None),
+            "max_speed_ms": (float(model.max_speed_ms) if model.max_speed_ms is not None else None),
             "avg_vam_vertical_speed_mh": (
-                float(model.avg_vam_vertical_speed_mh)
-                if model.avg_vam_vertical_speed_mh is not None
-                else None
+                float(model.avg_vam_vertical_speed_mh) if model.avg_vam_vertical_speed_mh is not None else None
             ),
             "telemetry_points_count": model.telemetry_points_count,
             "hr_zones_distribution": model.hr_zones_distribution,

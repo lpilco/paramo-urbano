@@ -41,9 +41,7 @@ class ElevationGainResult:
         if not isinstance(raw_gain_meters, (int, float)) or raw_gain_meters < 0.0:
             raise ValueError(f"raw_gain_meters must be non-negative, received: {raw_gain_meters!r}.")
         if not isinstance(filtered_gain_meters, (int, float)) or filtered_gain_meters < 0.0:
-            raise ValueError(
-                f"filtered_gain_meters must be non-negative, received: {filtered_gain_meters!r}."
-            )
+            raise ValueError(f"filtered_gain_meters must be non-negative, received: {filtered_gain_meters!r}.")
         if not isinstance(points_count, int) or points_count < 0:
             raise ValueError(f"points_count must be a non-negative integer, received: {points_count!r}.")
 
@@ -152,9 +150,7 @@ class AltitudeHysteresisFilter:
         if not isinstance(window_size, int) or window_size <= 0 or window_size % 2 == 0:
             raise ValueError(f"window_size must be a positive odd integer, received: {window_size!r}.")
 
-        sanitized: List[float] = [
-            float(e.meters) if isinstance(e, Elevation) else float(e) for e in elevations
-        ]
+        sanitized: List[float] = [float(e.meters) if isinstance(e, Elevation) else float(e) for e in elevations]
         if len(sanitized) < window_size:
             return sanitized
 
@@ -206,8 +202,7 @@ class AltitudeHysteresisFilter:
             val = float(p.meters) if isinstance(p, Elevation) else float(p)
             if val < Elevation.MIN_METERS or val > Elevation.MAX_METERS:
                 raise InvalidElevationError(
-                    f"Elevation {val} m violates planetary bounds "
-                    f"[{Elevation.MIN_METERS}, {Elevation.MAX_METERS}]."
+                    f"Elevation {val} m violates planetary bounds " f"[{Elevation.MIN_METERS}, {Elevation.MAX_METERS}]."
                 )
             pts.append(val)
 

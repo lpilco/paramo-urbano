@@ -31,9 +31,7 @@ XXE_SYSTEM_PATTERN: re.Pattern = re.compile(r"SYSTEM\s+[\"']", re.IGNORECASE)
 XXE_PUBLIC_PATTERN: re.Pattern = re.compile(r"PUBLIC\s+[\"']", re.IGNORECASE)
 
 
-def compute_haversine_distance(
-    lat1: float, lon1: float, lat2: float, lon2: float
-) -> float:
+def compute_haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Calculate the great circle distance between two points in meters.
 
     Args:
@@ -50,10 +48,7 @@ def compute_haversine_distance(
     delta_phi = math.radians(lat2 - lat1)
     delta_lambda = math.radians(lon2 - lon1)
 
-    a = (
-        math.sin(delta_phi / 2.0) ** 2
-        + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2.0) ** 2
-    )
+    a = math.sin(delta_phi / 2.0) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2.0) ** 2
     c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(max(0.0, 1.0 - a)))
     return EARTH_RADIUS_METERS * c
 
@@ -94,9 +89,7 @@ class GpxParser(ActivityParser):
             raise CorruptedFileException("GPX payload must be bytes.")
 
         if len(raw_bytes) > self.MAX_FILE_SIZE_BYTES:
-            raise SecurityXmlAttackException(
-                f"Payload size ({len(raw_bytes)} bytes) exceeds maximum security limit."
-            )
+            raise SecurityXmlAttackException(f"Payload size ({len(raw_bytes)} bytes) exceeds maximum security limit.")
 
         # 1. AppSec Defenses: Inspect for malicious entity declarations (XXE / bombs)
         # Search the raw byte buffer for DOCTYPE or ENTITY tokens
@@ -107,9 +100,7 @@ class GpxParser(ActivityParser):
             or XXE_SYSTEM_PATTERN.search(sample_header)
             or XXE_PUBLIC_PATTERN.search(sample_header)
         ):
-            raise SecurityXmlAttackException(
-                "XML External Entity (XXE) or DTD injection detected. Processing aborted."
-            )
+            raise SecurityXmlAttackException("XML External Entity (XXE) or DTD injection detected. Processing aborted.")
 
         # 2. Parse XML safely with standard ElementTree
         try:

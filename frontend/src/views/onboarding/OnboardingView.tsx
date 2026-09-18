@@ -23,8 +23,8 @@ export const OnboardingView: React.FC = () => {
   } | null>(null);
 
   // Profile B State: Interactive Gellish HR calculator
-  const [age, setAge] = useState<number>(profile.age || 30);
-  const [weight, setWeight] = useState<number>(profile.weight_kg || 70);
+  const [age, setAge] = useState<number>(profile?.age || 30);
+  const [weight, setWeight] = useState<number>(profile?.weight_kg || 70);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
 
   // Gellish formula: HRmax = 208 - (0.7 * age)
@@ -51,7 +51,9 @@ export const OnboardingView: React.FC = () => {
 
   const handleAgeChange = (newAge: number) => {
     setAge(newAge);
-    updateProfile({ ...profile, age: newAge, weight_kg: weight });
+    if (profile) {
+      updateProfile({ ...profile, age: newAge, weight_kg: weight });
+    }
   };
 
   return (
@@ -280,7 +282,9 @@ export const OnboardingView: React.FC = () => {
                     onChange={(e) => {
                       const w = Number(e.target.value);
                       setWeight(w);
-                      updateProfile({ ...profile, weight_kg: w });
+                      if (profile) {
+                        updateProfile({ ...profile, weight_kg: w });
+                      }
                     }}
                   />
                 </div>

@@ -62,8 +62,7 @@ class TestWorkloadMetrics:
         assert hash(m1) == hash(m2)
         assert hash(m1) != hash(m3)
         assert repr(m1) == (
-            "WorkloadMetrics(day_index=1, load=80.0, ctl=40.0, atl=50.0, "
-            "tsb=-10.0, is_critical_fatigue=False)"
+            "WorkloadMetrics(day_index=1, load=80.0, ctl=40.0, atl=50.0, " "tsb=-10.0, is_critical_fatigue=False)"
         )
 
     def test_invalid_day_index_raises_type_error(self) -> None:

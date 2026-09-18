@@ -48,9 +48,7 @@ class TestPaceZone:
         assert z1 != "not_a_zone"
         assert hash(z1) == hash(z2)
         assert hash(z1) != hash(z3)
-        assert repr(z1) == (
-            "PaceZone(name='EASY', nominal=360.0, target_low=356.0, target_high=364.0)"
-        )
+        assert repr(z1) == ("PaceZone(name='EASY', nominal=360.0, target_low=356.0, target_high=364.0)")
 
     @pytest.mark.parametrize(
         "name,nom,low,high,pct",
@@ -155,24 +153,18 @@ class TestVDOTCalculator:
             (5000, "1200"),
         ],
     )
-    def test_calculate_vdot_invalid_inputs(
-        self, calculator: VDOTCalculator, dist, dur
-    ) -> None:
+    def test_calculate_vdot_invalid_inputs(self, calculator: VDOTCalculator, dist, dur) -> None:
         """Test non-positive or non-numeric arguments raise PhysiologicalCalculationError."""
         with pytest.raises(PhysiologicalCalculationError):
             calculator.calculate_vdot_from_race(distance_meters=dist, duration_seconds=dur)
 
-    def test_calculate_vdot_out_of_bounds_raises_error(
-        self, calculator: VDOTCalculator
-    ) -> None:
+    def test_calculate_vdot_out_of_bounds_raises_error(self, calculator: VDOTCalculator) -> None:
         """Test unrealistically slow or fast performances raise InvalidVDOTError."""
         # 5000m in 2 hours (120 min) -> VDOT < 30
         with pytest.raises(InvalidVDOTError, match="outside biological boundaries"):
             calculator.calculate_vdot_from_race(distance_meters=5000, duration_seconds=7200)
 
-    def test_prescribe_zones_generates_all_5_zones_with_gps_tolerance(
-        self, calculator: VDOTCalculator
-    ) -> None:
+    def test_prescribe_zones_generates_all_5_zones_with_gps_tolerance(self, calculator: VDOTCalculator) -> None:
         """Test generation of 5 standard zones with symmetric ±4 sec/km GPS tolerance."""
         rx = calculator.prescribe_zones(vdot=50.0)
         assert rx.vdot == 50.0
@@ -190,16 +182,12 @@ class TestVDOTCalculator:
         assert rx.marathon.nominal_sec_per_km < rx.easy.nominal_sec_per_km
 
     @pytest.mark.parametrize("invalid_vdot", [20.0, 86.0, "fifty", None])
-    def test_prescribe_zones_invalid_vdot(
-        self, calculator: VDOTCalculator, invalid_vdot
-    ) -> None:
+    def test_prescribe_zones_invalid_vdot(self, calculator: VDOTCalculator, invalid_vdot) -> None:
         """Test prescribing zones with invalid VDOT raises InvalidVDOTError."""
         with pytest.raises(InvalidVDOTError):
             calculator.prescribe_zones(invalid_vdot)  # type: ignore
 
-    def test_velocity_from_vo2_negative_discriminant_error(
-        self, calculator: VDOTCalculator
-    ) -> None:
+    def test_velocity_from_vo2_negative_discriminant_error(self, calculator: VDOTCalculator) -> None:
         """Test rare numerical failure in velocity solver raises exception."""
         # Force a negative target_vo2 so (4.60 + target_vo2) is highly negative and discriminant < 0
         with pytest.raises(PhysiologicalCalculationError, match="Negative discriminant"):

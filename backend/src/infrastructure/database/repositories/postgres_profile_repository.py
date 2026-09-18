@@ -1,7 +1,8 @@
 """PostgreSQL concrete repository implementation for Athlete Profiles and Goals."""
 
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import List, Optional
+import uuid
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +15,7 @@ from backend.src.domain.models.enums import Discipline, ExperienceLevel, Subgoal
 from backend.src.domain.models.goal import Goal
 from backend.src.domain.models.value_objects import HeartRate
 from backend.src.infrastructure.database.models.goal import GoalModel
+from backend.src.infrastructure.database.models.plan import TrainingPlanModel
 from backend.src.infrastructure.database.models.profile import AthleteProfileModel
 
 
@@ -72,9 +74,7 @@ class PostgresProfileRepository(AthleteProfileRepository):
 
     async def save_profile(self, profile: AthleteProfile) -> AthleteProfile:
         """Persist or update an athlete profile entity."""
-        stmt = select(AthleteProfileModel).where(
-            AthleteProfileModel.id == profile.profile_id
-        )
+        stmt = select(AthleteProfileModel).where(AthleteProfileModel.id == profile.profile_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
 
@@ -106,9 +106,7 @@ class PostgresProfileRepository(AthleteProfileRepository):
 
     async def get_profile_by_id(self, profile_id: str) -> Optional[AthleteProfile]:
         """Retrieve an athlete profile by its primary identifier."""
-        stmt = select(AthleteProfileModel).where(
-            AthleteProfileModel.id == profile_id
-        )
+        stmt = select(AthleteProfileModel).where(AthleteProfileModel.id == profile_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
@@ -117,18 +115,14 @@ class PostgresProfileRepository(AthleteProfileRepository):
 
     async def get_profile_by_user_id(self, user_id: str) -> Optional[AthleteProfile]:
         """Retrieve an athlete profile associated with a user account."""
-        stmt = select(AthleteProfileModel).where(
-            AthleteProfileModel.user_id == user_id
-        )
+        stmt = select(AthleteProfileModel).where(AthleteProfileModel.user_id == user_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
             return None
         return self._to_domain_profile(model)
 
-    async def update_workload_baselines(
-        self, profile_id: str, ctl: float, atl: float
-    ) -> None:
+    async def update_workload_baselines(self, profile_id: str, ctl: float, atl: float) -> None:
         """Update Chronic Training Load (CTL) and Acute Training Load (ATL) baselines."""
         stmt = (
             update(AthleteProfileModel)
@@ -163,8 +157,35 @@ class PostgresProfileRepository(AthleteProfileRepository):
             model.subgoal_type = goal.subgoal_type.value
             model.custom_distance_km = goal.target_distance_km
             model.target_elevation_gain_m = goal.target_elevation_gain_m
-            model.target_date = goal.target_date
-            model.available_days_per_week = goal.available_days_per_week
+        await self._session.flush()
+
+        # Initialize or update active mesocycle training plan for this goal
+        plan_stmt = select(TrainingPlanModel).where(
+            TrainingPlanModel.athlete_profile_id == goal.athlete_profile_id,
+            TrainingPlanModel.status == "ACTIVE",
+        )
+        plan_res = await self._session.execute(plan_stmt)
+        plan_model = plan_res.scalar_one_or_none()
+
+        start_d = date.today()
+        end_d = goal.target_date
+        plan_name = f"Plan {goal.discipline.value} ({goal.subgoal_type.value})"
+
+        if plan_model is None:
+            plan_model = TrainingPlanModel(
+                id=str(uuid.uuid4()),
+                athlete_profile_id=goal.athlete_profile_id,
+                goal_id=goal.goal_id,
+                name=plan_name,
+                start_date=start_d,
+                end_date=end_d,
+                status="ACTIVE",
+            )
+            self._session.add(plan_model)
+        else:
+            plan_model.goal_id = goal.goal_id
+            plan_model.name = plan_name
+            plan_model.end_date = end_d
 
         await self._session.flush()
         return goal

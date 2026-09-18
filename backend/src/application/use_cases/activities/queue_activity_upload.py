@@ -77,9 +77,7 @@ class QueueActivityUploadUseCase:
         # 4. Immediate Magic Bytes Validation for .FIT payloads (FR-01)
         if ext == "fit":
             if len(file_bytes) < 12 or file_bytes[8:12] != b".FIT":
-                error_detail = (
-                    "Missing or invalid FIT magic bytes: expected b'.FIT' in header bytes 8-11."
-                )
+                error_detail = "Missing or invalid FIT magic bytes: expected b'.FIT' in header bytes 8-11."
                 # Persist job audit entry marked as FAILED
                 await self._job_repo.create_job(
                     job_id=job_id,

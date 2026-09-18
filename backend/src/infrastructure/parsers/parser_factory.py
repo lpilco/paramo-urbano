@@ -14,6 +14,7 @@ from backend.src.infrastructure.parsers.fit_parser import (
     FitParser,
 )
 from backend.src.infrastructure.parsers.gpx_parser import GpxParser
+from backend.src.infrastructure.parsers.json_parser import JsonActivityParser
 from backend.src.infrastructure.parsers.sanitizer import PhysiologicalSanitizer
 
 
@@ -35,6 +36,7 @@ class ParserFactory:
             ".fit": FitParser,
             ".gpx": GpxParser,
             ".csv": CsvMatcher,
+            ".json": JsonActivityParser,
         }
 
     def register_parser(self, extension: str, parser_cls: Type[ActivityParser]) -> None:
@@ -106,17 +108,20 @@ class ParserFactory:
                 return self._create_gpx_parser()
             elif "text/csv" in m or "application/csv" in m or "text/comma-separated-values" in m:
                 return self._create_csv_parser()
+            elif "json" in m or "application/json" in m:
+                return JsonActivityParser(sanitizer=self._sanitizer)
 
-        # 4. Fallback Heuristic for CSV text content if file_bytes provided
+        # 4. Fallback Heuristic for CSV or JSON text content if file_bytes provided
         if file_bytes and not file_bytes.startswith(b"\x00"):
-            sample = file_bytes[:512].decode("utf-8", errors="ignore")
+            sample = file_bytes[:512].decode("utf-8", errors="ignore").strip()
+            if sample.startswith("{") and sample.endswith("}"):
+                return JsonActivityParser(sanitizer=self._sanitizer)
             if any(h in sample.lower() for h in ("time", "date", "fecha", "distance", "distancia", "bpm")):
                 return self._create_csv_parser()
 
         identifier = file_name or mime_type or "unknown"
         raise UnsupportedFileFormatException(
-            f"No compatible parser registered for payload ({identifier}). "
-            f"Supported formats: .FIT, .GPX, .CSV."
+            f"No compatible parser registered for payload ({identifier}). " f"Supported formats: .FIT, .GPX, .CSV."
         )
 
     def _create_fit_parser(self) -> FitParser:

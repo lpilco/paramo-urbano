@@ -30,29 +30,17 @@ class ActivityModel(Base):
         index=True,
     )
     source_type: Mapped[str] = mapped_column(String(32), nullable=False)
-    file_storage_key: Mapped[Optional[str]] = mapped_column(
-        String(512), nullable=True
-    )
-    file_hash_sha256: Mapped[Optional[str]] = mapped_column(
-        String(64), nullable=True, unique=True, index=True
-    )
+    file_storage_key: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    file_hash_sha256: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, unique=True, index=True)
     sport_category: Mapped[str] = mapped_column(String(32), nullable=False)
-    started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, index=True
-    )
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     duration_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
-    distance_meters: Mapped[float] = mapped_column(
-        Numeric(10, 2), default=0.0, nullable=False
-    )
-    elevation_gain_meters: Mapped[float] = mapped_column(
-        Numeric(8, 2), default=0.0, nullable=False
-    )
+    distance_meters: Mapped[float] = mapped_column(Numeric(10, 2), default=0.0, nullable=False)
+    elevation_gain_meters: Mapped[float] = mapped_column(Numeric(8, 2), default=0.0, nullable=False)
     tss_score: Mapped[Optional[float]] = mapped_column(Numeric(6, 2), nullable=True)
     session_rpe: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     foster_load: Mapped[Optional[float]] = mapped_column(Numeric(8, 2), nullable=True)
-    processing_status: Mapped[str] = mapped_column(
-        String(32), default="PROCESSED", nullable=False
-    )
+    processing_status: Mapped[str] = mapped_column(String(32), default="PROCESSED", nullable=False)
     notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -66,14 +54,13 @@ class ActivityModel(Base):
         nullable=False,
     )
 
-    athlete_profile: Mapped["AthleteProfileModel"] = relationship(
-        "AthleteProfileModel", back_populates="activities"
-    )
+    athlete_profile: Mapped["AthleteProfileModel"] = relationship("AthleteProfileModel", back_populates="activities")
     telemetry_summary: Mapped[Optional["ActivityTelemetrySummaryModel"]] = relationship(
         "ActivityTelemetrySummaryModel",
         back_populates="activity",
         uselist=False,
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
 
@@ -98,24 +85,14 @@ class ActivityTelemetrySummaryModel(Base):
     max_hr: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     avg_speed_ms: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
     max_speed_ms: Mapped[Optional[float]] = mapped_column(Numeric(5, 2), nullable=True)
-    avg_vam_vertical_speed_mh: Mapped[Optional[float]] = mapped_column(
-        Numeric(7, 1), nullable=True
-    )
-    telemetry_points_count: Mapped[int] = mapped_column(
-        Integer, default=0, nullable=False
-    )
-    hr_zones_distribution: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        PortableJSON, nullable=True
-    )
-    pace_zones_distribution: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        PortableJSON, nullable=True
-    )
+    avg_vam_vertical_speed_mh: Mapped[Optional[float]] = mapped_column(Numeric(7, 1), nullable=True)
+    telemetry_points_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    hr_zones_distribution: Mapped[Optional[Dict[str, Any]]] = mapped_column(PortableJSON, nullable=True)
+    pace_zones_distribution: Mapped[Optional[Dict[str, Any]]] = mapped_column(PortableJSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
-    activity: Mapped["ActivityModel"] = relationship(
-        "ActivityModel", back_populates="telemetry_summary"
-    )
+    activity: Mapped["ActivityModel"] = relationship("ActivityModel", back_populates="telemetry_summary")

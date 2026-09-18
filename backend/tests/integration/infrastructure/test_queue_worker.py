@@ -30,9 +30,7 @@ from backend.src.infrastructure.queue.redis_queue import RedisJobQueue
 from backend.src.infrastructure.queue.worker import TelemetryWorker
 from backend.src.infrastructure.storage.minio_storage import MinioStorageAdapter
 
-FIXTURES_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../../data/fixtures")
-)
+FIXTURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../data/fixtures"))
 
 
 @pytest.fixture
@@ -46,9 +44,7 @@ async def async_session_factory():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    factory = async_sessionmaker(
-        bind=engine, class_=AsyncSession, expire_on_commit=False
-    )
+    factory = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
     yield factory
     await engine.dispose()
 
@@ -191,9 +187,7 @@ class TestQueueWorkerIntegration:
         job_id = "job_corrupt_" + str(uuid.uuid4())
 
         async with async_session_factory() as session:
-            session.add(
-                UserModel(id=user_id, email="corrupt@paramo.ec", password_hash="x", full_name="User")
-            )
+            session.add(UserModel(id=user_id, email="corrupt@paramo.ec", password_hash="x", full_name="User"))
             profile_repo = PostgresProfileRepository(session)
             await profile_repo.save_profile(
                 AthleteProfile(

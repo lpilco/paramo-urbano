@@ -124,4 +124,3 @@ __all__ = [
     "VDOTPrescription",
     "PaceZone",
 ]
-

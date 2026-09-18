@@ -14,6 +14,9 @@ import { OnboardingView } from './views/onboarding/OnboardingView';
 import { GoalsView } from './views/onboarding/GoalsView';
 import { DiagnosticsView } from './views/diagnostics/DiagnosticsView';
 import { PlannerView } from './views/planner/PlannerView';
+import { RegisterView } from './views/auth/RegisterView';
+import { LoginView } from './views/auth/LoginView';
+import { ChatbotAssistant } from './components/assistant/ChatbotAssistant';
 
 export const App: React.FC = () => {
   const getRouteFromHash = (): string => {
@@ -34,6 +37,12 @@ export const App: React.FC = () => {
   }, []);
 
   const renderCurrentView = () => {
+    if (route.startsWith('/register')) {
+      return <RegisterView />;
+    }
+    if (route.startsWith('/login')) {
+      return <LoginView />;
+    }
     if (route.startsWith('/onboarding/goals')) {
       return <GoalsView />;
     }
@@ -51,6 +60,8 @@ export const App: React.FC = () => {
       <Navbar currentRoute={route} />
 
       {renderCurrentView()}
+
+      <ChatbotAssistant />
 
       <footer role="contentinfo" className="site-footer">
         <p>

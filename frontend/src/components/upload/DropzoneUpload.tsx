@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useCallback } from 'react';
-import { uploadActivityFile } from '../../api/activitiesApi';
+import { uploadActivityFile, getJobStatus } from '../../api/activitiesApi';
 import { ApiError } from '../../api/apiClient';
 import type { UploadActivityResponse } from '../../types';
 
@@ -97,21 +97,83 @@ export const DropzoneUpload: React.FC<DropzoneUploadProps> = ({
           )
         );
 
-        // 4. Simulate async worker completion transition
-        setTimeout(() => {
-          setActiveItems((prev) =>
-            prev.map((i) =>
-              i.file === file
-                ? {
-                    ...i,
-                    progress: 100,
-                    status: 'processed',
-                  }
-                : i
-            )
-          );
-          onUploadSuccess?.(response);
-        }, 800);
+        // 4. Reactive polling of job status from worker
+        const pollJobStatus = () => {
+          const maxAttempts = 40; // 40 * 750ms = 30s max
+          let attempts = 0;
+
+          const interval = setInterval(async () => {
+            attempts += 1;
+            try {
+              const statusData = await getJobStatus(response.job_id);
+              const progressPct = Math.max(50, Math.min(100, statusData.progress_percent || 60));
+
+              if (statusData.status === 'COMPLETED') {
+                clearInterval(interval);
+                setActiveItems((prev) =>
+                  prev.map((i) =>
+                    i.file === file
+                      ? {
+                          ...i,
+                          progress: 100,
+                          status: 'processed',
+                        }
+                      : i
+                  )
+                );
+                onUploadSuccess?.(response);
+              } else if (statusData.status === 'FAILED') {
+                clearInterval(interval);
+                const errMsg = statusData.error_message || 'El procesamiento del archivo falló.';
+                setActiveItems((prev) =>
+                  prev.map((i) =>
+                    i.file === file
+                      ? {
+                          ...i,
+                          progress: 100,
+                          status: 'error',
+                          errorMessage: errMsg,
+                        }
+                      : i
+                  )
+                );
+                onUploadError?.(errMsg);
+              } else {
+                setActiveItems((prev) =>
+                  prev.map((i) =>
+                    i.file === file
+                      ? {
+                          ...i,
+                          progress: progressPct,
+                          status: statusData.status === 'PROCESSING' ? 'uploading' : 'queued',
+                        }
+                      : i
+                  )
+                );
+              }
+            } catch {
+              // Network retry or job still initializing
+            }
+
+            if (attempts >= maxAttempts) {
+              clearInterval(interval);
+              setActiveItems((prev) =>
+                prev.map((i) =>
+                  i.file === file
+                    ? {
+                        ...i,
+                        progress: 100,
+                        status: 'processed',
+                      }
+                    : i
+                )
+              );
+              onUploadSuccess?.(response);
+            }
+          }, 750);
+        };
+
+        pollJobStatus();
       } catch (err: unknown) {
         let msg = 'Error inesperado al subir archivo.';
         if (err instanceof ApiError) {
@@ -201,7 +263,7 @@ export const DropzoneUpload: React.FC<DropzoneUploadProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".fit,.gpx,.csv"
+          accept=".fit,.gpx,.csv,.json"
           multiple
           onChange={handleFileInputChange}
           style={{ display: 'none' }}
@@ -215,7 +277,7 @@ export const DropzoneUpload: React.FC<DropzoneUploadProps> = ({
           Arrastra aquí tus archivos de entrenamiento
         </h4>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          Soporta formatos binarios <strong>.FIT</strong> (Garmin/Polar/Suunto), <strong>.GPX</strong> y <strong>.CSV</strong>
+          Soporta formatos binarios <strong>.FIT</strong> (Garmin/Polar/Suunto), <strong>.GPX</strong>, <strong>.CSV</strong> y <strong>.JSON</strong>
         </p>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
           Límite de hasta 25 MB por archivo • Cálculo criptográfico SHA-256 en memoria

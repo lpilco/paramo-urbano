@@ -32,19 +32,11 @@ class GoalModel(Base):
     discipline: Mapped[str] = mapped_column(String(32), nullable=False)
     subgoal_type: Mapped[str] = mapped_column(String(64), nullable=False)
     custom_distance_km: Mapped[float] = mapped_column(Numeric(7, 3), nullable=False)
-    target_elevation_gain_m: Mapped[float] = mapped_column(
-        Numeric(7, 1), default=0.0, nullable=False
-    )
-    mountain_altitude_category: Mapped[Optional[str]] = mapped_column(
-        String(64), nullable=True
-    )
+    target_elevation_gain_m: Mapped[float] = mapped_column(Numeric(7, 1), default=0.0, nullable=False)
+    mountain_altitude_category: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     target_date: Mapped[date] = mapped_column(Date, nullable=False)
-    available_days_per_week: Mapped[int] = mapped_column(
-        Integer, default=5, nullable=False
-    )
-    is_active: Mapped[bool] = mapped_column(
-        Boolean, default=True, nullable=False, index=True
-    )
+    available_days_per_week: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -57,6 +49,4 @@ class GoalModel(Base):
         nullable=False,
     )
 
-    athlete_profile: Mapped["AthleteProfileModel"] = relationship(
-        "AthleteProfileModel", back_populates="goals"
-    )
+    athlete_profile: Mapped["AthleteProfileModel"] = relationship("AthleteProfileModel", back_populates="goals")

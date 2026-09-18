@@ -13,9 +13,7 @@ from backend.src.infrastructure.security.jwt_service import RSAJwtSecurityServic
 from backend.src.infrastructure.storage.minio_storage import MinioStorageAdapter
 from backend.src.interfaces.api.main import create_app
 
-FIXTURES_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../data/fixtures")
-)
+FIXTURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data/fixtures"))
 
 
 @pytest_asyncio.fixture

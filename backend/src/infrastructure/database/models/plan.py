@@ -37,9 +37,7 @@ class TrainingPlanModel(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(32), default="ACTIVE", nullable=False, index=True
-    )
+    status: Mapped[str] = mapped_column(String(32), default="ACTIVE", nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -82,21 +80,15 @@ class MicrocycleModel(Base):
     phase: Mapped[str] = mapped_column(String(32), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    target_volume_hours: Mapped[float] = mapped_column(
-        Numeric(5, 2), default=0.0, nullable=False
-    )
-    target_tss: Mapped[float] = mapped_column(
-        Numeric(6, 2), default=0.0, nullable=False
-    )
+    target_volume_hours: Mapped[float] = mapped_column(Numeric(5, 2), default=0.0, nullable=False)
+    target_tss: Mapped[float] = mapped_column(Numeric(6, 2), default=0.0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
-    plan: Mapped["TrainingPlanModel"] = relationship(
-        "TrainingPlanModel", back_populates="microcycles"
-    )
+    plan: Mapped["TrainingPlanModel"] = relationship("TrainingPlanModel", back_populates="microcycles")
     workout_sessions: Mapped[List["WorkoutSessionModel"]] = relationship(
         "WorkoutSessionModel",
         back_populates="microcycle",
@@ -124,27 +116,15 @@ class WorkoutSessionModel(Base):
     is_rest_day: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     session_category: Mapped[str] = mapped_column(String(32), nullable=False)
     duration_min: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    target_distance_km: Mapped[float] = mapped_column(
-        Numeric(6, 3), default=0.0, nullable=False
-    )
-    target_elevation_gain_m: Mapped[float] = mapped_column(
-        Numeric(6, 1), default=0.0, nullable=False
-    )
-    exercise_list: Mapped[List[Any]] = mapped_column(
-        PortableJSON, default=list, nullable=False
-    )
-    nutrition_guidelines: Mapped[Dict[str, Any]] = mapped_column(
-        PortableJSON, default=dict, nullable=False
-    )
-    recovery_prescriptions: Mapped[Dict[str, Any]] = mapped_column(
-        PortableJSON, default=dict, nullable=False
-    )
+    target_distance_km: Mapped[float] = mapped_column(Numeric(6, 3), default=0.0, nullable=False)
+    target_elevation_gain_m: Mapped[float] = mapped_column(Numeric(6, 1), default=0.0, nullable=False)
+    exercise_list: Mapped[List[Any]] = mapped_column(PortableJSON, default=list, nullable=False)
+    nutrition_guidelines: Mapped[Dict[str, Any]] = mapped_column(PortableJSON, default=dict, nullable=False)
+    recovery_prescriptions: Mapped[Dict[str, Any]] = mapped_column(PortableJSON, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
-    microcycle: Mapped["MicrocycleModel"] = relationship(
-        "MicrocycleModel", back_populates="workout_sessions"
-    )
+    microcycle: Mapped["MicrocycleModel"] = relationship("MicrocycleModel", back_populates="workout_sessions")

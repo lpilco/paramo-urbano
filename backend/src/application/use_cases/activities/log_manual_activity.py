@@ -64,9 +64,7 @@ class LogManualActivityUseCase:
 
         # 2. Invariant: Validate Foster sRPE score bounds [1, 10]
         if request.session_rpe < 1 or request.session_rpe > 10:
-            raise InvalidRPEError(
-                f"Foster sRPE must be an integer between 1 and 10, received: {request.session_rpe}."
-            )
+            raise InvalidRPEError(f"Foster sRPE must be an integer between 1 and 10, received: {request.session_rpe}.")
 
         # 3. Deterministic Foster workload calculation (Carga = minutos * RPE)
         calculated_foster = float(request.duration_minutes * request.session_rpe)

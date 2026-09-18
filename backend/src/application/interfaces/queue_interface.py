@@ -30,9 +30,7 @@ class JobQueueConsumer(ABC):
     """Abstract interface defining the contract for dequeuing telemetry processing jobs."""
 
     @abstractmethod
-    async def dequeue_telemetry_job(
-        self, timeout_seconds: int = 1
-    ) -> Optional[Dict[str, Any]]:
+    async def dequeue_telemetry_job(self, timeout_seconds: int = 1) -> Optional[Dict[str, Any]]:
         """Dequeue the next processing job from the task queue.
 
         Args:

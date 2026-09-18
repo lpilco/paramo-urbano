@@ -77,9 +77,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(BiometricConstraintViolationException)
-    async def biometric_violation_handler(
-        request: Request, exc: BiometricConstraintViolationException
-    ) -> JSONResponse:
+    async def biometric_violation_handler(request: Request, exc: BiometricConstraintViolationException) -> JSONResponse:
         return _create_problem_response(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             title="Biometric Constraint Violation",

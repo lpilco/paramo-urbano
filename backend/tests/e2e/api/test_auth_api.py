@@ -34,9 +34,7 @@ class TestAuthAPI:
         # Verify HttpOnly refresh token cookie
         assert "refresh_token" in response.cookies
 
-    async def test_register_biometric_violation_max_hr_less_than_rest_hr(
-        self, client: AsyncClient
-    ) -> None:
+    async def test_register_biometric_violation_max_hr_less_than_rest_hr(self, client: AsyncClient) -> None:
         """Verify strict hard rule rejection (HTTP 422) when resting HR >= max HR."""
         payload = {
             "email": "invalid.biometrics@paramourbano.org",

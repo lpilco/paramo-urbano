@@ -58,9 +58,7 @@ class PhysiologicalSanitizer:
             athlete_max_hr (Optional[int], optional): Athlete's known maximum heart rate
                 in bpm for zone distribution. Defaults to 190 if not provided.
         """
-        self._hysteresis_filter = AltitudeHysteresisFilter(
-            threshold_meters=hysteresis_threshold_meters
-        )
+        self._hysteresis_filter = AltitudeHysteresisFilter(threshold_meters=hysteresis_threshold_meters)
         self._max_hr_ref: int = (
             athlete_max_hr
             if athlete_max_hr and self.MIN_HR_BPM <= athlete_max_hr <= self.MAX_HR_BPM
@@ -228,9 +226,7 @@ class PhysiologicalSanitizer:
                 valid_speeds.append(sanitized_spd)
 
             if prev_pt is not None:
-                delta_sec = max(
-                    0, int((pt.timestamp - prev_pt.timestamp).total_seconds())
-                )
+                delta_sec = max(0, int((pt.timestamp - prev_pt.timestamp).total_seconds()))
                 if delta_sec > 0:
                     # Compute distance increment if cumulative distance not present
                     if pt.distance_meters is not None and prev_pt.distance_meters is not None:
@@ -258,18 +254,12 @@ class PhysiologicalSanitizer:
             total_distance = last_pt.distance_meters
 
         # Elapsed time fallback if single point or zero moving time detected
-        total_elapsed_seconds = max(
-            1, int((last_pt.timestamp - started_at).total_seconds())
-        )
-        duration_seconds = (
-            active_moving_seconds if active_moving_seconds > 0 else total_elapsed_seconds
-        )
+        total_elapsed_seconds = max(1, int((last_pt.timestamp - started_at).total_seconds()))
+        duration_seconds = active_moving_seconds if active_moving_seconds > 0 else total_elapsed_seconds
 
         # Apply 3.0m altitude hysteresis filter
         if len(valid_elevations) >= 2:
-            elev_result: ElevationGainResult = (
-                self._hysteresis_filter.filter_elevation_gain(valid_elevations)
-            )
+            elev_result: ElevationGainResult = self._hysteresis_filter.filter_elevation_gain(valid_elevations)
             elevation_gain_meters = elev_result.filtered_gain_meters
         else:
             elevation_gain_meters = 0.0
@@ -349,9 +339,7 @@ class PhysiologicalSanitizer:
             EntityValidationError: If duration <= 0 or metrics are physically impossible.
         """
         if duration_seconds <= 0:
-            raise EntityValidationError(
-                f"duration_seconds must be positive, received: {duration_seconds}."
-            )
+            raise EntityValidationError(f"duration_seconds must be positive, received: {duration_seconds}.")
 
         sanitized_dist = max(0.0, float(distance_meters))
         sanitized_elev = max(0.0, float(elevation_gain_meters))
@@ -360,11 +348,7 @@ class PhysiologicalSanitizer:
         sanitized_max_hr = self.sanitize_heart_rate(max_hr_bpm)
 
         # Enforce avg_hr <= max_hr consistency
-        if (
-            sanitized_avg_hr is not None
-            and sanitized_max_hr is not None
-            and sanitized_avg_hr > sanitized_max_hr
-        ):
+        if sanitized_avg_hr is not None and sanitized_max_hr is not None and sanitized_avg_hr > sanitized_max_hr:
             sanitized_max_hr = sanitized_avg_hr
 
         avg_hr_obj = HeartRate(sanitized_avg_hr) if sanitized_avg_hr else None
@@ -374,11 +358,7 @@ class PhysiologicalSanitizer:
         sanitized_max_spd = self.sanitize_speed(max_speed_mps)
 
         # Enforce avg_spd <= max_spd consistency
-        if (
-            sanitized_avg_spd is not None
-            and sanitized_max_spd is not None
-            and sanitized_avg_spd > sanitized_max_spd
-        ):
+        if sanitized_avg_spd is not None and sanitized_max_spd is not None and sanitized_avg_spd > sanitized_max_spd:
             sanitized_max_spd = sanitized_avg_spd
 
         avg_spd_obj = Speed(sanitized_avg_spd) if sanitized_avg_spd is not None else None

@@ -9,11 +9,13 @@ import { ApiError } from '../../api/apiClient';
 import type { Discipline } from '../../types';
 
 export const GoalsView: React.FC = () => {
-  const [discipline, setDiscipline] = useState<Discipline>('ROAD_RUNNING');
-  const [subgoalType, setSubgoalType] = useState<string>('HALF_MARATHON');
-  const [customDistanceKm, setCustomDistanceKm] = useState<number>(21.097);
-  const [targetElevationGainM, setTargetElevationGainM] = useState<number>(0);
-  const [availableDays, setAvailableDays] = useState<number>(5);
+  // Canonical defaults per PRD v2.0
+  const [discipline, setDiscipline] = useState<Discipline>('TRAIL_RUNNING');
+  const [subgoalType, setSubgoalType] = useState<string>('TRAIL_HALF_MARATHON');
+  const [customDistanceKm, setCustomDistanceKm] = useState<number>(21.1);
+  const [targetElevationGainM, setTargetElevationGainM] = useState<number>(1200);
+  const [availableDays, setAvailableDays] = useState<number>(4);
+  const [preferredPlanView, setPreferredPlanView] = useState<string>('WEEKLY');
   const [mountainAltitudeCategory, setMountainAltitudeCategory] = useState<string>('BAJA_MONTANA');
 
   // Calculate the strict minimum date: today + 14 days
@@ -23,10 +25,10 @@ export const GoalsView: React.FC = () => {
     return minDate.toISOString().split('T')[0];
   }, []);
 
-  // Default target date: today + 90 days (~13 weeks)
+  // Canonical default target date: exactly 14 weeks (98 days) in future
   const [targetDate, setTargetDate] = useState<string>(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 90);
+    d.setDate(d.getDate() + 98);
     return d.toISOString().split('T')[0];
   });
 
@@ -44,14 +46,14 @@ export const GoalsView: React.FC = () => {
   // Handle discipline change presets
   const handleDisciplineChange = (newDiscipline: Discipline) => {
     setDiscipline(newDiscipline);
-    if (newDiscipline === 'ROAD_RUNNING') {
-      setSubgoalType('HALF_MARATHON');
-      setCustomDistanceKm(21.097);
+    if (newDiscipline === 'TRAIL_RUNNING') {
+      setSubgoalType('TRAIL_HALF_MARATHON');
+      setCustomDistanceKm(21.1);
+      setTargetElevationGainM(1200);
+    } else if (newDiscipline === 'ROAD_RUNNING') {
+      setSubgoalType('ROAD_10K');
+      setCustomDistanceKm(10.0);
       setTargetElevationGainM(0);
-    } else if (newDiscipline === 'TRAIL_RUNNING') {
-      setSubgoalType('TRAIL_MARATHON');
-      setCustomDistanceKm(42.195);
-      setTargetElevationGainM(2400);
     } else if (newDiscipline === 'TREKKING') {
       setSubgoalType('ALPINISMO_TREKKING');
       setCustomDistanceKm(18.0);
@@ -63,9 +65,7 @@ export const GoalsView: React.FC = () => {
   const handleSubgoalPreset = (presetKm: number, presetType: string, presetElevation = 0) => {
     setSubgoalType(presetType);
     setCustomDistanceKm(presetKm);
-    if (presetElevation > 0) {
-      setTargetElevationGainM(presetElevation);
-    }
+    setTargetElevationGainM(presetElevation);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,9 +97,11 @@ export const GoalsView: React.FC = () => {
         discipline,
         subgoal_type: subgoalType,
         target_distance_km: customDistanceKm,
+        custom_distance_km: customDistanceKm,
         target_elevation_gain_m: targetElevationGainM,
         target_date: targetDate,
         available_days_per_week: availableDays,
+        preferred_plan_view: preferredPlanView,
         mountain_altitude_category: discipline === 'TREKKING' ? mountainAltitudeCategory : null,
       });
 
@@ -174,50 +176,75 @@ export const GoalsView: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. Subgoals Presets for Road Running */}
+          {/* 2. Subgoals Presets for Trail Running */}
+          {discipline === 'TRAIL_RUNNING' && (
+            <div className="form-group">
+              <span className="form-label">Submetas de Trail Running Populares</span>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                <button
+                  type="button"
+                  className={`btn ${subgoalType === 'TRAIL_HALF_MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                  onClick={() => handleSubgoalPreset(21.1, 'TRAIL_HALF_MARATHON', 1200)}
+                >
+                  21K Trail (+1.200m)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${subgoalType === 'TRAIL_MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                  onClick={() => handleSubgoalPreset(42.2, 'TRAIL_MARATHON', 2400)}
+                >
+                  42K Trail (+2.400m)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${subgoalType === 'ULTRA_TRAIL' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                  onClick={() => handleSubgoalPreset(65.0, 'ULTRA_TRAIL', 3800)}
+                >
+                  Ultra Trail (+3.800m)
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 2b. Subgoals Presets for Road Running */}
           {discipline === 'ROAD_RUNNING' && (
             <div className="form-group">
               <span className="form-label">Submetas de Asfalto Populares</span>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                 <button
                   type="button"
-                  className={`btn ${subgoalType === '5K' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${subgoalType === 'ROAD_5K' || subgoalType === '5K' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                  onClick={() => handleSubgoalPreset(5.0, '5K')}
+                  onClick={() => handleSubgoalPreset(5.0, 'ROAD_5K', 0)}
                 >
                   5K
                 </button>
                 <button
                   type="button"
-                  className={`btn ${subgoalType === '10K' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${subgoalType === 'ROAD_10K' || subgoalType === '10K' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                  onClick={() => handleSubgoalPreset(10.0, '10K')}
+                  onClick={() => handleSubgoalPreset(10.0, 'ROAD_10K', 0)}
                 >
                   10K
                 </button>
                 <button
                   type="button"
-                  className={`btn ${subgoalType === 'HALF_MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${subgoalType === 'ROAD_HALF_MARATHON' || subgoalType === 'HALF_MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                  onClick={() => handleSubgoalPreset(21.097, 'HALF_MARATHON')}
+                  onClick={() => handleSubgoalPreset(21.1, 'ROAD_HALF_MARATHON', 0)}
                 >
                   21K (Media Maratón)
                 </button>
                 <button
                   type="button"
-                  className={`btn ${subgoalType === 'MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${subgoalType === 'ROAD_MARATHON' || subgoalType === 'MARATHON' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                  onClick={() => handleSubgoalPreset(42.195, 'MARATHON')}
+                  onClick={() => handleSubgoalPreset(42.2, 'ROAD_MARATHON', 0)}
                 >
                   42K (Maratón)
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${subgoalType === 'ULTRA_ROAD' ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-                  onClick={() => handleSubgoalPreset(50.0, 'ULTRA_ROAD')}
-                >
-                  Ultra Asfalto
                 </button>
               </div>
             </div>
@@ -231,8 +258,8 @@ export const GoalsView: React.FC = () => {
             <input
               id="goal-distance"
               type="number"
-              step="0.1"
-              min="1"
+              step="0.01"
+              min="0.5"
               max="250"
               className="form-input"
               value={customDistanceKm}
@@ -330,7 +357,7 @@ export const GoalsView: React.FC = () => {
           {/* 7. Available Days per Week */}
           <div className="form-group">
             <label htmlFor="available-days" className="form-label">
-              Días de Entrenamiento Disponibles por Semana (1 a 7) *
+              Días de Entrenamiento Disponibles por Semana (3 a 6) *
             </label>
             <select
               id="available-days"
@@ -339,10 +366,31 @@ export const GoalsView: React.FC = () => {
               onChange={(e) => setAvailableDays(Number(e.target.value))}
             >
               <option value={3}>3 días / semana (Mínimo recomendado)</option>
-              <option value={4}>4 días / semana</option>
+              <option value={4}>4 días / semana (Predeterminado equilibrado)</option>
               <option value={5}>5 días / semana (Estándar recomendado)</option>
               <option value={6}>6 días / semana (Alto rendimiento)</option>
             </select>
+          </div>
+
+          {/* 8. Preferred Planner View */}
+          <div className="form-group">
+            <label htmlFor="preferred-plan-view" className="form-label">
+              Vista de Planificador Preferida *
+            </label>
+            <select
+              id="preferred-plan-view"
+              className="form-select"
+              value={preferredPlanView}
+              onChange={(e) => setPreferredPlanView(e.target.value)}
+              data-testid="preferred-plan-view-select"
+            >
+              <option value="WEEKLY">Semanal (WEEKLY - Recomendada para periodización)</option>
+              <option value="DAILY">Diaria (DAILY - Enfoque paso a paso)</option>
+              <option value="BLOCK">Por Bloques (BLOCK - Visión macrociclos)</option>
+            </select>
+            <span className="form-hint">
+              Define el diseño inicial de tu panel al generar el plan de entrenamiento.
+            </span>
           </div>
 
           <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>

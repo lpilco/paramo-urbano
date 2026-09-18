@@ -16,9 +16,7 @@ from backend.src.infrastructure.parsers.fit_parser import (
     compute_fit_crc16,
 )
 
-FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "../../../../../data/fixtures"
-)
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "../../../../../data/fixtures")
 
 
 class TestFitParser:
@@ -48,9 +46,7 @@ class TestFitParser:
         assert record.file_hash is not None
         assert len(record.file_hash.value) == 64
 
-    def test_rejects_corrupted_header_missing_magic_bytes(
-        self, fit_parser: FitParser
-    ) -> None:
+    def test_rejects_corrupted_header_missing_magic_bytes(self, fit_parser: FitParser) -> None:
         """Verify rejection with InvalidFitHeaderException when magic bytes are corrupted."""
         with open(os.path.join(FIXTURES_DIR, "corrupted_header.fit"), "rb") as f:
             corrupt_bytes = f.read()
@@ -149,9 +145,7 @@ class TestFitParser:
         data_mesg = bytearray()
         data_mesg.extend(session_def)
         data_mesg.append(0x00)
-        data_mesg.extend(
-            struct.pack("<IIIBH", 1000000000, 3600000, 1000000, 155, 320)
-        )
+        data_mesg.extend(struct.pack("<IIIBH", 1000000000, 3600000, 1000000, 155, 320))
 
         data_size = len(data_mesg)
         header = bytearray([14, 0x20])
@@ -213,9 +207,9 @@ class TestFitParser:
         session_def.extend([0, 0])
         session_def.extend(struct.pack("<H", 18))
         session_def.append(5)
-        session_def.extend([5, 1, 0x00])   # sport (enum)
-        session_def.extend([7, 4, 0x86])   # elapsed time ms
-        session_def.extend([9, 4, 0x86])   # distance cm
+        session_def.extend([5, 1, 0x00])  # sport (enum)
+        session_def.extend([7, 4, 0x86])  # elapsed time ms
+        session_def.extend([9, 4, 0x86])  # distance cm
         session_def.extend([14, 2, 0x84])  # avg speed
         session_def.extend([15, 2, 0x84])  # max speed
 
@@ -243,4 +237,3 @@ class TestFitParser:
         assert record.avg_speed.mps == 2.5
         assert record.max_speed is not None
         assert record.max_speed.mps == 3.5
-

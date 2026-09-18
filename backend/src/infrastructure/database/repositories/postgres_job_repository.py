@@ -88,22 +88,15 @@ class PostgresIngestionJobRepository(IngestionJobRepository):
         if error_message is not None:
             values["error_message"] = error_message
 
-        stmt = (
-            update(IngestionJobModel)
-            .where(IngestionJobModel.id == job_id)
-            .values(**values)
-        )
+        stmt = update(IngestionJobModel).where(IngestionJobModel.id == job_id).values(**values)
         await self._session.execute(stmt)
         await self._session.flush()
 
     async def get_job_by_hash(self, file_hash_sha256: str) -> Optional[Dict[str, Any]]:
         """Retrieve an ingestion job by the file's SHA-256 hash."""
-        stmt = select(IngestionJobModel).where(
-            IngestionJobModel.file_hash_sha256 == file_hash_sha256.lower()
-        )
+        stmt = select(IngestionJobModel).where(IngestionJobModel.file_hash_sha256 == file_hash_sha256.lower())
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         if model is None:
             return None
         return self._to_dict(model)
-

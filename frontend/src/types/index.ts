@@ -22,6 +22,19 @@ export interface UploadActivityResponse {
   status: 'QUEUED' | 'PROCESSED' | 'FAILED' | string;
 }
 
+/** Status of queued telemetry processing job */
+export interface JobStatusResponse {
+  job_id: string;
+  athlete_profile_id: string;
+  file_name: string;
+  file_hash_sha256: string;
+  status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | string;
+  progress_percent: number;
+  error_message?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /** Request payload for manual non-GPS activity */
 export interface ManualActivityRequest {
   sport_category: SportCategory | string;
@@ -44,6 +57,18 @@ export interface ManualActivityResponse {
   notes: string;
 }
 
+/** Batch request payload for manual workouts */
+export interface BatchManualActivitiesRequest {
+  items: ManualActivityRequest[];
+}
+
+/** Response returned after batch manual workout logging */
+export interface BatchManualActivitiesResponse {
+  saved_count: number;
+  total_calculated_load: number;
+  activities: ManualActivityResponse[];
+}
+
 /** Summary item in paginated activities list */
 export interface ActivitySummary {
   id: string;
@@ -54,6 +79,7 @@ export interface ActivitySummary {
   distance_km: number;
   elevation_gain_m: number;
   session_rpe?: number | null;
+  avg_hr?: number | null;
   calculated_load?: number | null;
   tss_score?: number | null;
   processing_status: string;
@@ -100,10 +126,12 @@ export interface CreateGoalRequest {
   discipline: Discipline | string;
   subgoal_type: string;
   target_distance_km: number;
+  custom_distance_km?: number;
   target_elevation_gain_m?: number;
   target_date: string;
   available_days_per_week?: number;
   mountain_altitude_category?: string | null;
+  preferred_plan_view?: string;
 }
 
 /** Persisted athletic goal response */
@@ -116,6 +144,7 @@ export interface GoalResponse {
   target_elevation_gain_m: number;
   target_date: string;
   available_days_per_week: number;
+  preferred_plan_view?: string;
   days_to_target: number;
   weeks_to_target: number;
   created_at: string;
@@ -189,3 +218,37 @@ export interface UserProfile {
   age?: number;
   weight_kg?: number;
 }
+
+/** Inbound query for Andean outdoor assistant */
+export interface ChatRequest {
+  message: string;
+  context?: Record<string, unknown>;
+}
+
+/** Mountain destination technical sheet */
+export interface DestinationSheet {
+  id: string;
+  name: string;
+  altitudinal_floor: string;
+  altitudinal_range: string;
+  summit_elevation_m: number;
+  elevation_gain_m: number;
+  location_province: string;
+  approach_refuges: string[];
+  mandatory_technical_gear: string[];
+  hypoxia_acclimatization_alerts: string[];
+  maate_requirements: string[];
+  aseguim_guide_mandatory: boolean;
+  aseguim_notes: string;
+  recommended_season: string;
+}
+
+/** Andean assistant response */
+export interface ChatResponse {
+  reply: string;
+  escalate_to_whatsapp: boolean;
+  escalation_reason?: string | null;
+  whatsapp_url?: string | null;
+  destination?: DestinationSheet | null;
+}
+

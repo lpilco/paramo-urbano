@@ -16,6 +16,22 @@ class UploadActivityResponse(BaseModel):
     status: str = "QUEUED"
 
 
+class JobStatusResponse(BaseModel):
+    """Immutable DTO representing the status of an asynchronous telemetry ingestion task."""
+
+    model_config = ConfigDict(frozen=True)
+
+    job_id: str
+    athlete_profile_id: str
+    file_name: str
+    file_hash_sha256: str
+    status: str
+    progress_percent: int
+    error_message: Optional[str] = None
+    created_at: str
+    updated_at: str
+
+
 class ManualActivityRequest(BaseModel):
     """Immutable DTO for logging a manual workout session without GPS."""
 
@@ -44,6 +60,24 @@ class ManualActivityResponse(BaseModel):
     notes: str
 
 
+class BatchManualActivitiesRequest(BaseModel):
+    """Immutable DTO for batch logging multiple manual workout sessions in a single transaction."""
+
+    model_config = ConfigDict(frozen=True)
+
+    items: List[ManualActivityRequest] = Field(..., min_length=1, max_length=50)
+
+
+class BatchManualActivitiesResponse(BaseModel):
+    """Immutable DTO returned after batch logging manual workout sessions."""
+
+    model_config = ConfigDict(frozen=True)
+
+    saved_count: int
+    total_calculated_load: float
+    activities: List[ManualActivityResponse]
+
+
 class ActivitySummaryDTO(BaseModel):
     """Consolidated activity summary for listing."""
 
@@ -57,6 +91,7 @@ class ActivitySummaryDTO(BaseModel):
     distance_km: float
     elevation_gain_m: float
     session_rpe: Optional[int] = None
+    avg_hr: Optional[int] = None
     calculated_load: Optional[float] = None
     tss_score: Optional[float] = None
     processing_status: str

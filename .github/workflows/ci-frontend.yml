@@ -1,0 +1,57 @@
+name: Frontend CI — TypeCheck, Lint, Tests & Build
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'frontend/**'
+      - 'shared/**'
+      - '.github/workflows/ci-frontend.yml'
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'frontend/**'
+      - 'shared/**'
+      - '.github/workflows/ci-frontend.yml'
+
+concurrency:
+  group: ci-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend-build-and-test:
+    name: Frontend TypeScript, ESLint, Vitest & Vite Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js Runtime (20.x)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Clean Dependency Installation
+        run: npm ci
+
+      - name: Strict TypeScript Compilation Check (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: ESLint Static Code Analysis
+        run: npm run lint
+
+      - name: Component & UI Unit Tests (Vitest)
+        run: npm test
+
+      - name: Production Bundle Compilation (Vite Build)
+        run: npm run build

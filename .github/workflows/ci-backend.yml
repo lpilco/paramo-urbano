@@ -1,0 +1,102 @@
+name: Backend CI — Verification & Quality Gates
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/**'
+      - 'shared/**'
+      - '.github/workflows/ci-backend.yml'
+      - 'infra/**'
+  pull_request:
+    branches:
+      - main
+      - staging
+    paths:
+      - 'backend/**'
+      - 'shared/**'
+      - '.github/workflows/ci-backend.yml'
+      - 'infra/**'
+
+concurrency:
+  group: ci-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-test:
+    name: Backend Lint, Typing, Unit (100% Cov) & Integration
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: paramo_test_db
+          POSTGRES_USER: paramo_admin
+          POSTGRES_PASSWORD: paramo_secure_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    env:
+      PYTHONPATH: .
+      DATABASE_URL: postgresql://paramo_admin:paramo_secure_pass@localhost:5432/paramo_test_db
+      REDIS_URL: redis://localhost:6379/0
+      JWT_SECRET: ci_pipeline_deterministic_jwt_secret_test_key_2026
+      STORAGE_BUCKET_RAW_ACTIVITIES: paramo-raw-telemetry
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Runtime (3.11)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r backend/requirements-dev.txt
+
+      - name: Flake8 Code Style Linter
+        run: |
+          flake8 backend/src backend/tests --max-line-length=120 --extend-ignore=E203,W503,F401,W391,E302,E305
+
+      - name: Black Code Formatting Check
+        run: |
+          black --check --line-length=120 backend/src backend/tests
+
+      - name: Mypy Static Type Checking
+        run: |
+          mypy backend/src/domain/physiological --ignore-missing-imports
+
+      - name: Unit Tests with 100% Line Coverage Target (Physiological Core)
+        run: |
+          pytest -q --cov=backend.src.domain.physiological --cov-report=term-missing --cov-fail-under=100 backend/tests/unit/domain/physiological
+
+      - name: Integration Tests (Parsers, Queue, Database, MinIO)
+        run: |
+          pytest -q backend/tests/integration
+
+      - name: Idempotent Database Seed Verification
+        run: |
+          python -m backend.src.infrastructure.database.seeds

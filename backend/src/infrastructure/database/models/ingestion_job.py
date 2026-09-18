@@ -25,14 +25,10 @@ class IngestionJobModel(Base):
         index=True,
     )
     file_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    file_hash_sha256: Mapped[str] = mapped_column(
-        String(64), nullable=False, index=True
-    )
+    file_hash_sha256: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     file_storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
     detected_format: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
-    status: Mapped[str] = mapped_column(
-        String(32), default="QUEUED", nullable=False, index=True
-    )
+    status: Mapped[str] = mapped_column(String(32), default="QUEUED", nullable=False, index=True)
     progress_percent: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

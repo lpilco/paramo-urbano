@@ -131,9 +131,7 @@ class FitParser(ActivityParser):
 
         header_size = raw_bytes[0]
         if header_size not in (12, 14):
-            raise InvalidFitHeaderException(
-                f"Unsupported FIT header size: {header_size} bytes (expected 12 or 14)."
-            )
+            raise InvalidFitHeaderException(f"Unsupported FIT header size: {header_size} bytes (expected 12 or 14).")
 
         if len(raw_bytes) < header_size:
             raise InvalidFitHeaderException("FIT file payload truncated before header ended.")
@@ -142,8 +140,7 @@ class FitParser(ActivityParser):
         magic_bytes = raw_bytes[8:12]
         if magic_bytes != FIT_MAGIC_SIGNATURE:
             raise InvalidFitHeaderException(
-                f"Missing or invalid FIT magic bytes: expected {FIT_MAGIC_SIGNATURE!r}, "
-                f"received {magic_bytes!r}."
+                f"Missing or invalid FIT magic bytes: expected {FIT_MAGIC_SIGNATURE!r}, " f"received {magic_bytes!r}."
             )
 
         data_size = struct.unpack("<I", raw_bytes[4:8])[0]
@@ -151,8 +148,7 @@ class FitParser(ActivityParser):
 
         if len(raw_bytes) < expected_total_size:
             raise CorruptedFitFileException(
-                f"Truncated FIT file: expected at least {expected_total_size} bytes, "
-                f"found {len(raw_bytes)} bytes."
+                f"Truncated FIT file: expected at least {expected_total_size} bytes, " f"found {len(raw_bytes)} bytes."
             )
 
         # Validate header CRC if 14-byte header and non-zero
@@ -164,9 +160,7 @@ class FitParser(ActivityParser):
                     raise InvalidFitHeaderException("FIT header CRC checksum mismatch.")
 
         # Validate file CRC (last 2 bytes of data section)
-        file_crc_expected = struct.unpack(
-            "<H", raw_bytes[header_size + data_size : header_size + data_size + 2]
-        )[0]
+        file_crc_expected = struct.unpack("<H", raw_bytes[header_size + data_size : header_size + data_size + 2])[0]
         computed_file_crc = compute_fit_crc16(raw_bytes[: header_size + data_size])
         if computed_file_crc != file_crc_expected:
             raise CorruptedFitFileException(
@@ -222,9 +216,7 @@ class FitParser(ActivityParser):
                 for _ in range(num_fields):
                     if offset + 3 > end_offset:
                         break
-                    f_num, f_size, f_type = struct.unpack(
-                        f"{endianness}BBB", raw_bytes[offset : offset + 3]
-                    )
+                    f_num, f_size, f_type = struct.unpack(f"{endianness}BBB", raw_bytes[offset : offset + 3])
                     fields.append(FitDefinitionField(f_num, f_size, f_type))
                     offset += 3
 
@@ -310,9 +302,7 @@ class FitParser(ActivityParser):
         if session_data:
             start_ts = session_data.get(2) or session_data.get(253)
             if start_ts is not None:
-                started_at = datetime.fromtimestamp(
-                    start_ts + FIT_EPOCH_OFFSET, tz=timezone.utc
-                )
+                started_at = datetime.fromtimestamp(start_ts + FIT_EPOCH_OFFSET, tz=timezone.utc)
             else:
                 started_at = datetime.now(timezone.utc)
 
@@ -346,9 +336,7 @@ class FitParser(ActivityParser):
 
         raise CorruptedFitFileException("FIT file contained neither valid records nor session summary.")
 
-    def _decode_field_value(
-        self, data: bytes, size: int, base_type: int, endianness: str
-    ) -> Optional[Any]:
+    def _decode_field_value(self, data: bytes, size: int, base_type: int, endianness: str) -> Optional[Any]:
         """Decode raw bytes into a Python primitive based on FIT base type."""
         try:
             if base_type == 0x00 or base_type == 0x02 or base_type == 0x0A:  # enum / uint8
@@ -378,9 +366,7 @@ class FitParser(ActivityParser):
             return None
         return None
 
-    def _extract_telemetry_point(
-        self, field_values: Dict[int, Any]
-    ) -> Optional[RawTelemetryPoint]:
+    def _extract_telemetry_point(self, field_values: Dict[int, Any]) -> Optional[RawTelemetryPoint]:
         """Map raw decoded record fields into a RawTelemetryPoint."""
         ts_val = field_values.get(253)
         if ts_val is None:

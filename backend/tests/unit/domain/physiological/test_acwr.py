@@ -45,8 +45,7 @@ class TestACWRStatus:
         assert hash(s1) == hash(s2)
         assert hash(s1) != hash(s3)
         assert repr(s1) == (
-            "ACWRStatus(ratio=1.4, zone='CAUTION', "
-            "requires_mandatory_rest=False, freeze_weekly_increments=True)"
+            "ACWRStatus(ratio=1.4, zone='CAUTION', " "requires_mandatory_rest=False, freeze_weekly_increments=True)"
         )
 
     def test_invalid_ratio_raises_error(self) -> None:
@@ -80,7 +79,7 @@ class TestACWREvaluator:
             (1.05, ACWRZone.SWEET_SPOT, False, False),  # User prompt required limit
             (1.30, ACWRZone.SWEET_SPOT, False, False),
             (1.31, ACWRZone.CAUTION, False, True),
-            (1.40, ACWRZone.CAUTION, False, True),      # User prompt required limit
+            (1.40, ACWRZone.CAUTION, False, True),  # User prompt required limit
             (1.50, ACWRZone.CAUTION, False, True),
             (1.51, ACWRZone.CRITICAL_INJURY_RISK, True, True),
             (1.62, ACWRZone.CRITICAL_INJURY_RISK, True, True),  # User prompt required limit
@@ -149,9 +148,7 @@ class TestACWREvaluator:
             (50.0, None),
         ],
     )
-    def test_calculate_invalid_arguments_raise_error(
-        self, evaluator: ACWREvaluator, acute, chronic
-    ) -> None:
+    def test_calculate_invalid_arguments_raise_error(self, evaluator: ACWREvaluator, acute, chronic) -> None:
         """Test negative or non-numeric arguments raise InvalidLoadError."""
         with pytest.raises(InvalidLoadError):
             evaluator.calculate(acute_load=acute, chronic_load=chronic)
@@ -167,9 +164,7 @@ class TestACWREvaluator:
         assert status.zone == ACWRZone.SWEET_SPOT
         assert status.ratio == pytest.approx(1.2727, abs=0.001)
 
-    def test_calculate_from_daily_series_insufficient_history(
-        self, evaluator: ACWREvaluator
-    ) -> None:
+    def test_calculate_from_daily_series_insufficient_history(self, evaluator: ACWREvaluator) -> None:
         """Test series with fewer than chronic_days raises PhysiologicalCalculationError."""
         daily_loads = [60.0] * 20
         with pytest.raises(PhysiologicalCalculationError, match="Insufficient history"):

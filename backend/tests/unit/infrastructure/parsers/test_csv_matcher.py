@@ -7,9 +7,7 @@ from backend.src.domain.exceptions import CorruptedFileException
 from backend.src.domain.models.enums import SportCategory
 from backend.src.infrastructure.parsers.csv_matcher import CsvMatcher
 
-FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "../../../../../data/fixtures"
-)
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "../../../../../data/fixtures")
 
 
 class TestCsvMatcher:
@@ -35,9 +33,7 @@ class TestCsvMatcher:
         assert record.avg_speed is not None
         assert record.file_hash is not None
 
-    def test_parse_garmin_spanish_export_with_semicolon(
-        self, csv_matcher: CsvMatcher
-    ) -> None:
+    def test_parse_garmin_spanish_export_with_semicolon(self, csv_matcher: CsvMatcher) -> None:
         """Verify Garmin Connect Spanish export with semicolon delimiter and HH:MM:SS."""
         with open(os.path.join(FIXTURES_DIR, "garmin_activities_sample.csv"), "rb") as f:
             data = f.read()
@@ -77,9 +73,7 @@ class TestCsvMatcher:
         assert record.max_hr is not None
         assert record.max_hr.bpm == 172
 
-    def test_parse_modalidad_b_per_second_timeseries(
-        self, csv_matcher: CsvMatcher
-    ) -> None:
+    def test_parse_modalidad_b_per_second_timeseries(self, csv_matcher: CsvMatcher) -> None:
         """Verify second-by-second time-series telemetry detection and normalization."""
         with open(os.path.join(FIXTURES_DIR, "telemetry_timeseries_sample.csv"), "rb") as f:
             data = f.read()
@@ -101,9 +95,7 @@ class TestCsvMatcher:
         assert record.distance_meters == 5000.0
         assert record.duration_seconds == 1500
 
-    def test_empty_csv_raises_corrupted_file_exception(
-        self, csv_matcher: CsvMatcher
-    ) -> None:
+    def test_empty_csv_raises_corrupted_file_exception(self, csv_matcher: CsvMatcher) -> None:
         """Verify empty CSV payload raises CorruptedFileException."""
         with pytest.raises(CorruptedFileException):
             csv_matcher.parse(b"")
@@ -135,4 +127,3 @@ class TestCsvMatcher:
         assert record.started_at.day == 18
         assert record.started_at.month == 9
         assert record.started_at.year == 2026
-

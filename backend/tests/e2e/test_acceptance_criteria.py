@@ -37,9 +37,7 @@ from backend.src.interfaces.api.middlewares.privacy_filter import (
     obfuscate_gps_points,
 )
 
-FIXTURES_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../data/fixtures")
-)
+FIXTURES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data/fixtures"))
 
 
 @pytest.mark.asyncio
@@ -403,7 +401,8 @@ class TestFR04DashboardAndForcedRest:
         week1_sessions = microcycles[0]["sessions"]
         # Must contain at least one session marked as mandatory rest day
         forced_rest_sessions = [
-            s for s in week1_sessions
+            s
+            for s in week1_sessions
             if s.get("is_rest_day") is True and "DESCANSO OBLIGATORIO" in s.get("day_name", "")
         ]
         assert len(forced_rest_sessions) >= 1

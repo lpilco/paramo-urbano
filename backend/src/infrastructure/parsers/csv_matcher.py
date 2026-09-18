@@ -33,6 +33,9 @@ CSV_COLUMN_ALIASES: Dict[str, Tuple[str, ...]] = {
     "duration": (
         "duration",
         "duración",
+        "duration_minutes",
+        "duration_min",
+        "duracion_minutos",
         "elapsed time",
         "moving time",
         "tiempo",
@@ -45,6 +48,8 @@ CSV_COLUMN_ALIASES: Dict[str, Tuple[str, ...]] = {
     "distance": (
         "distance",
         "distancia",
+        "distance_km",
+        "distancia_km",
         "total distance",
         "distance (km)",
         "distance (m)",
@@ -59,6 +64,7 @@ CSV_COLUMN_ALIASES: Dict[str, Tuple[str, ...]] = {
         "ascent (m)",
         "ascent",
         "elevation_gain",
+        "elevation_gain_m",
         "desnivel positivo",
         "subida acumulada",
         "climb",
@@ -69,6 +75,7 @@ CSV_COLUMN_ALIASES: Dict[str, Tuple[str, ...]] = {
     ),
     "avg_hr": (
         "average heart rate",
+        "avg_heart_rate",
         "avg hr",
         "fc media",
         "heart rate [bpm]",
@@ -112,7 +119,16 @@ CSV_COLUMN_ALIASES: Dict[str, Tuple[str, ...]] = {
         "tipo de actividad",
         "sport",
         "deporte",
+        "sport_type",
+        "sport_category",
         "type",
+    ),
+    "session_rpe": (
+        "session_rpe",
+        "session rpe",
+        "rpe",
+        "foster_rpe",
+        "esfuerzo",
     ),
 }
 
@@ -299,33 +315,15 @@ class CsvMatcher(ActivityParser):
                     curr_elapsed = int(dur_val)
 
             if pt_time is None:
-                pt_time = datetime.fromtimestamp(
-                    base_time.timestamp() + curr_elapsed, tz=timezone.utc
-                )
+                pt_time = datetime.fromtimestamp(base_time.timestamp() + curr_elapsed, tz=timezone.utc)
                 curr_elapsed += 1
 
-            raw_hr = (
-                self._parse_numeric(row[idx_hr])
-                if idx_hr is not None and idx_hr < len(row)
-                else None
-            )
+            raw_hr = self._parse_numeric(row[idx_hr]) if idx_hr is not None and idx_hr < len(row) else None
             hr = int(round(raw_hr)) if raw_hr is not None else None
 
-            alt = (
-                self._parse_numeric(row[idx_alt])
-                if idx_alt is not None and idx_alt < len(row)
-                else None
-            )
-            spd = (
-                self._parse_numeric(row[idx_spd])
-                if idx_spd is not None and idx_spd < len(row)
-                else None
-            )
-            dist = (
-                self._parse_numeric(row[idx_dist])
-                if idx_dist is not None and idx_dist < len(row)
-                else None
-            )
+            alt = self._parse_numeric(row[idx_alt]) if idx_alt is not None and idx_alt < len(row) else None
+            spd = self._parse_numeric(row[idx_spd]) if idx_spd is not None and idx_spd < len(row) else None
+            dist = self._parse_numeric(row[idx_dist]) if idx_dist is not None and idx_dist < len(row) else None
 
             points.append(
                 RawTelemetryPoint(
@@ -374,9 +372,17 @@ class CsvMatcher(ActivityParser):
             date_str = row[idx_date] if idx_date is not None and idx_date < len(row) else ""
             started_at = self._parse_flexible_date(date_str) or datetime.now(timezone.utc)
 
-            # Duration seconds
+            # Duration seconds (auto-detect minutes column vs seconds/time format)
             dur_str = row[idx_dur] if idx_dur is not None and idx_dur < len(row) else "0"
-            duration_sec = self._parse_duration_seconds(dur_str)
+            header_dur = headers[idx_dur].lower() if idx_dur is not None and idx_dur < len(headers) else ""
+            if ":" in dur_str:
+                duration_sec = self._parse_duration_seconds(dur_str)
+            elif "min" in header_dur:
+                raw_min = self._parse_numeric(dur_str) or 0.0
+                duration_sec = int(round(raw_min * 60))
+            else:
+                duration_sec = self._parse_duration_seconds(dur_str)
+
             if duration_sec <= 0:
                 continue
 
@@ -407,9 +413,7 @@ class CsvMatcher(ActivityParser):
 
             # Speeds (convert km/h to m/s if needed)
             avg_spd_raw = (
-                self._parse_numeric(row[idx_avg_spd])
-                if idx_avg_spd is not None and idx_avg_spd < len(row)
-                else None
+                self._parse_numeric(row[idx_avg_spd]) if idx_avg_spd is not None and idx_avg_spd < len(row) else None
             )
             if avg_spd_raw is not None and avg_spd_raw > 12.5:
                 avg_spd = avg_spd_raw / 3.6
@@ -419,9 +423,7 @@ class CsvMatcher(ActivityParser):
                 avg_spd = dist_meters / duration_sec if duration_sec > 0 else None
 
             max_spd_raw = (
-                self._parse_numeric(row[idx_max_spd])
-                if idx_max_spd is not None and idx_max_spd < len(row)
-                else None
+                self._parse_numeric(row[idx_max_spd]) if idx_max_spd is not None and idx_max_spd < len(row) else None
             )
             if max_spd_raw is not None and max_spd_raw > 12.5:
                 max_spd = max_spd_raw / 3.6
@@ -528,8 +530,8 @@ class CsvMatcher(ActivityParser):
         s = sport_str.strip().lower()
         if any(w in s for w in ("trail", "montaña", "mountain")):
             return SportCategory.TRAIL_RUN
-        if any(w in s for w in ("hike", "hiking", "trek", "senderismo", "caminata", "walk")):
+        if any(w in s for w in ("hike", "hiking", "trek", "trekking", "senderismo", "caminata", "walk")):
             return SportCategory.HIKE
-        if any(w in s for w in ("strength", "fuerza", "gym", "pesas")):
+        if any(w in s for w in ("strength", "fuerza", "gym", "pesas", "functional", "funcional")):
             return SportCategory.STRENGTH
         return SportCategory.ROAD_RUN

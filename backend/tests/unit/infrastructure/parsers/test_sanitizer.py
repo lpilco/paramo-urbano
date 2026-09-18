@@ -53,15 +53,19 @@ class TestPhysiologicalSanitizer:
         assert sanitizer.sanitize_speed(12.5) == 12.5
         assert sanitizer.sanitize_speed(3.25) == 3.25
 
-    def test_altitude_hysteresis_filter_integration(
-        self, sanitizer: PhysiologicalSanitizer
-    ) -> None:
+    def test_altitude_hysteresis_filter_integration(self, sanitizer: PhysiologicalSanitizer) -> None:
         """Verify 3.0m hysteresis filter rejects sensor jitter and accumulates authentic gain."""
         t0 = datetime(2026, 9, 18, 8, 0, 0, tzinfo=timezone.utc)
         # Sequence with <3m oscillations around 2800m followed by genuine 10m climb
         elevs = [
-            2800.0, 2801.0, 2800.5, 2801.2, 2800.8,  # Noise: oscillations < 3m
-            2805.0, 2808.0, 2810.0,                  # Genuine climb +10m
+            2800.0,
+            2801.0,
+            2800.5,
+            2801.2,
+            2800.8,  # Noise: oscillations < 3m
+            2805.0,
+            2808.0,
+            2810.0,  # Genuine climb +10m
         ]
         points = [
             RawTelemetryPoint(
@@ -101,16 +105,12 @@ class TestPhysiologicalSanitizer:
         assert zones["Z4_THRESHOLD"] == 40
         assert zones["Z5_ANAEROBIC"] == 50
 
-    def test_normalize_time_series_rejects_empty_points(
-        self, sanitizer: PhysiologicalSanitizer
-    ) -> None:
+    def test_normalize_time_series_rejects_empty_points(self, sanitizer: PhysiologicalSanitizer) -> None:
         """Verify empty points sequence raises EntityValidationError."""
         with pytest.raises(EntityValidationError):
             sanitizer.normalize_time_series([], SportCategory.ROAD_RUN)
 
-    def test_normalize_summary_metrics_rejects_non_positive_duration(
-        self, sanitizer: PhysiologicalSanitizer
-    ) -> None:
+    def test_normalize_summary_metrics_rejects_non_positive_duration(self, sanitizer: PhysiologicalSanitizer) -> None:
         """Verify duration <= 0 raises EntityValidationError."""
         with pytest.raises(EntityValidationError):
             sanitizer.normalize_summary_metrics(

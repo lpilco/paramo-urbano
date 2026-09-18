@@ -78,9 +78,7 @@ class ParseActivityFileUseCase:
         self._parser_factory = parser_factory or ParserFactory()
         self._dedup_registry = deduplication_registry or InMemoryDeduplicationRegistry()
 
-    def execute(
-        self, request: IngestActivityRequest, fail_on_duplicate: bool = False
-    ) -> IngestActivityResult:
+    def execute(self, request: IngestActivityRequest, fail_on_duplicate: bool = False) -> IngestActivityResult:
         """Execute telemetry ingestion workflow.
 
         Steps:
@@ -115,9 +113,7 @@ class ParseActivityFileUseCase:
         # 2. Deduplication Check
         is_duplicate = self._dedup_registry.exists(hex_digest)
         if is_duplicate and fail_on_duplicate:
-            raise DuplicateActivityError(
-                f"Activity payload with SHA-256 '{hex_digest}' was previously ingested."
-            )
+            raise DuplicateActivityError(f"Activity payload with SHA-256 '{hex_digest}' was previously ingested.")
 
         # 3. Resolve Parser via Factory
         parser = self._parser_factory.create_parser(
@@ -130,10 +126,7 @@ class ParseActivityFileUseCase:
         record = parser.parse(request.file_bytes)
 
         # 5. Apply Sport Category Override if supplied
-        if (
-            request.sport_category_override is not None
-            and request.sport_category_override != record.sport_category
-        ):
+        if request.sport_category_override is not None and request.sport_category_override != record.sport_category:
             record = CanonicalActivityRecord(
                 record_id=record.record_id,
                 sport_category=request.sport_category_override,

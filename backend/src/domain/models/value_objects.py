@@ -40,13 +40,10 @@ class HeartRate:
             InvalidHeartRateError: If `value` is not an integer or is outside [30, 240].
         """
         if not isinstance(value, int) or isinstance(value, bool):
-            raise InvalidHeartRateError(
-                f"Heart rate must be an integer, received: {type(value).__name__} ({value!r})."
-            )
+            raise InvalidHeartRateError(f"Heart rate must be an integer, received: {type(value).__name__} ({value!r}).")
         if value < self.MIN_BPM or value > self.MAX_BPM:
             raise InvalidHeartRateError(
-                f"Heart rate {value} bpm is outside biological boundaries "
-                f"[{self.MIN_BPM}, {self.MAX_BPM}]."
+                f"Heart rate {value} bpm is outside biological boundaries " f"[{self.MIN_BPM}, {self.MAX_BPM}]."
             )
         self._bpm: int = value
 
@@ -129,8 +126,7 @@ class Elevation:
         float_val = round(float(value), 2)
         if float_val < self.MIN_METERS or float_val > self.MAX_METERS:
             raise InvalidElevationError(
-                f"Elevation {float_val} m is outside planetary limits "
-                f"[{self.MIN_METERS}, {self.MAX_METERS}]."
+                f"Elevation {float_val} m is outside planetary limits " f"[{self.MIN_METERS}, {self.MAX_METERS}]."
             )
         self._meters: float = float_val
 
@@ -219,8 +215,7 @@ class Speed:
         float_val = round(float(value_mps), 4)
         if float_val < self.MIN_MPS or float_val > self.MAX_MPS:
             raise InvalidSpeedError(
-                f"Speed {float_val} m/s is outside physiological limits "
-                f"[{self.MIN_MPS}, {self.MAX_MPS}]."
+                f"Speed {float_val} m/s is outside physiological limits " f"[{self.MIN_MPS}, {self.MAX_MPS}]."
             )
         self._value_mps: float = float_val
 
@@ -344,13 +339,11 @@ class SessionRPE:
         """
         if not isinstance(value, int) or isinstance(value, bool):
             raise InvalidRPEError(
-                f"Session RPE must be an integer between 1 and 10, "
-                f"received: {type(value).__name__} ({value!r})."
+                f"Session RPE must be an integer between 1 and 10, " f"received: {type(value).__name__} ({value!r})."
             )
         if value < self.MIN_RPE or value > self.MAX_RPE:
             raise InvalidRPEError(
-                f"Session RPE score {value} is outside valid Foster scale "
-                f"[{self.MIN_RPE}, {self.MAX_RPE}]."
+                f"Session RPE score {value} is outside valid Foster scale " f"[{self.MIN_RPE}, {self.MAX_RPE}]."
             )
         self._value: int = value
 
@@ -374,9 +367,7 @@ class SessionRPE:
             ValueError: If `duration_minutes` is less than or equal to zero.
         """
         if not isinstance(duration_minutes, int) or duration_minutes <= 0:
-            raise ValueError(
-                f"Duration must be a positive integer in minutes, received: {duration_minutes!r}."
-            )
+            raise ValueError(f"Duration must be a positive integer in minutes, received: {duration_minutes!r}.")
         return float(duration_minutes * self._value)
 
     def __int__(self) -> int:
@@ -449,9 +440,7 @@ class Sha256Hash:
             InvalidHashError: If `value` is not a valid 64-character hex string.
         """
         if not isinstance(value, str):
-            raise InvalidHashError(
-                f"SHA-256 hash must be a string, received: {type(value).__name__} ({value!r})."
-            )
+            raise InvalidHashError(f"SHA-256 hash must be a string, received: {type(value).__name__} ({value!r}).")
         normalized = value.strip().lower()
         if len(normalized) != self.HASH_LENGTH or not self.HEX_PATTERN.match(normalized):
             raise InvalidHashError(
@@ -537,9 +526,7 @@ class RawTelemetryPoint:
             ValueError: If timestamp is not a datetime or coordinates are out of bounds.
         """
         if not isinstance(timestamp, datetime):
-            raise ValueError(
-                f"timestamp must be a datetime instance, received: {type(timestamp).__name__}."
-            )
+            raise ValueError(f"timestamp must be a datetime instance, received: {type(timestamp).__name__}.")
 
         if latitude is not None:
             if not isinstance(latitude, (int, float)) or isinstance(latitude, bool):
@@ -655,4 +642,3 @@ class RawTelemetryPoint:
         hr_str = f"{self._heart_rate} bpm" if self._heart_rate is not None else "-- bpm"
         alt_str = f"{self._elevation:.1f} m" if self._elevation is not None else "-- m"
         return f"TelemetryPoint[{self._timestamp.strftime('%H:%M:%S')}]: {hr_str}, {alt_str}"
-

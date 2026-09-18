@@ -62,14 +62,10 @@ class CanonicalActivityRecord:
             raise EntityValidationError("started_at must be a valid datetime instance.")
 
         if not isinstance(duration_seconds, int) or duration_seconds <= 0:
-            raise EntityValidationError(
-                f"duration_seconds must be a positive integer, received: {duration_seconds!r}."
-            )
+            raise EntityValidationError(f"duration_seconds must be a positive integer, received: {duration_seconds!r}.")
 
         if not isinstance(distance_meters, (int, float)) or distance_meters < 0.0:
-            raise EntityValidationError(
-                f"distance_meters must be non-negative, received: {distance_meters!r}."
-            )
+            raise EntityValidationError(f"distance_meters must be non-negative, received: {distance_meters!r}.")
 
         if not isinstance(elevation_gain_meters, (int, float)) or elevation_gain_meters < 0.0:
             raise EntityValidationError(
@@ -77,9 +73,7 @@ class CanonicalActivityRecord:
             )
 
         if avg_hr is not None and max_hr is not None and avg_hr > max_hr:
-            raise EntityValidationError(
-                f"avg_hr ({avg_hr.bpm} bpm) cannot exceed max_hr ({max_hr.bpm} bpm)."
-            )
+            raise EntityValidationError(f"avg_hr ({avg_hr.bpm} bpm) cannot exceed max_hr ({max_hr.bpm} bpm).")
 
         if avg_speed is not None and max_speed is not None and avg_speed > max_speed:
             raise EntityValidationError(
@@ -175,6 +169,7 @@ class Activity:
         processing_status: ProcessingStatus = ProcessingStatus.PROCESSED,
         notes: str = "",
         created_at: Optional[datetime] = None,
+        avg_hr: Optional[HeartRate] = None,
     ) -> None:
         """Initialize and validate an Activity entity.
 
@@ -211,14 +206,10 @@ class Activity:
             raise EntityValidationError("started_at must be a valid datetime instance.")
 
         if not isinstance(duration_seconds, int) or duration_seconds <= 0:
-            raise EntityValidationError(
-                f"duration_seconds must be a positive integer, received: {duration_seconds!r}."
-            )
+            raise EntityValidationError(f"duration_seconds must be a positive integer, received: {duration_seconds!r}.")
 
         if not isinstance(distance_meters, (int, float)) or distance_meters < 0.0:
-            raise EntityValidationError(
-                f"distance_meters must be non-negative, received: {distance_meters!r}."
-            )
+            raise EntityValidationError(f"distance_meters must be non-negative, received: {distance_meters!r}.")
 
         if not isinstance(elevation_gain_meters, (int, float)) or elevation_gain_meters < 0.0:
             raise EntityValidationError(
@@ -249,6 +240,7 @@ class Activity:
         self.processing_status: ProcessingStatus = processing_status
         self.notes: str = notes.strip()
         self.created_at: datetime = created_at or datetime.now(timezone.utc)
+        self.avg_hr: Optional[HeartRate] = avg_hr
 
     @classmethod
     def create_manual(
@@ -285,9 +277,7 @@ class Activity:
             EntityValidationError: If duration_minutes <= 0.
         """
         if not isinstance(duration_minutes, int) or duration_minutes <= 0:
-            raise EntityValidationError(
-                f"duration_minutes must be a positive integer, received: {duration_minutes!r}."
-            )
+            raise EntityValidationError(f"duration_minutes must be a positive integer, received: {duration_minutes!r}.")
         duration_seconds = duration_minutes * 60
         foster_load = float(duration_minutes * session_rpe.value)
 

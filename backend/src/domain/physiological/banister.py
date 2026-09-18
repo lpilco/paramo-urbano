@@ -55,9 +55,7 @@ class WorkloadMetrics:
 
         for name, val in [("load", load), ("ctl", ctl), ("atl", atl)]:
             if not isinstance(val, (int, float)) or isinstance(val, bool):
-                raise InvalidLoadError(
-                    f"{name} must be a numeric value, received: {type(val).__name__} ({val!r})."
-                )
+                raise InvalidLoadError(f"{name} must be a numeric value, received: {type(val).__name__} ({val!r}).")
             if val < 0.0:
                 raise InvalidLoadError(f"{name} cannot be negative, received: {val}.")
 
@@ -124,15 +122,17 @@ class WorkloadMetrics:
 
     def __hash__(self) -> int:
         """Return hash value for set and dict operations."""
-        return hash((
-            self.__class__,
-            self._day_index,
-            self._load,
-            self._ctl,
-            self._atl,
-            self._tsb,
-            self._is_critical_fatigue,
-        ))
+        return hash(
+            (
+                self.__class__,
+                self._day_index,
+                self._load,
+                self._ctl,
+                self._atl,
+                self._tsb,
+                self._is_critical_fatigue,
+            )
+        )
 
     def __repr__(self) -> str:
         """Produce reproducible technical representation."""

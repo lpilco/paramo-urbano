@@ -12,8 +12,8 @@ class RegisterAthleteRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
     full_name: str = Field(..., min_length=2, max_length=255)
-    age: int = Field(..., ge=10, le=100)
-    weight_kg: float = Field(..., ge=30.0, le=250.0)
+    age: int = Field(default=30, ge=10, le=100)
+    weight_kg: float = Field(default=70.0, ge=30.0, le=250.0)
     experience_level: str = Field(default="BEGINNER")
     rest_hr: Optional[int] = Field(default=None, ge=30, le=240)
     max_hr: Optional[int] = Field(default=None, ge=30, le=240)

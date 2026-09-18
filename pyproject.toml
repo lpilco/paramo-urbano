@@ -1,3 +1,10 @@
+[project]
+name = "paramo-urbano"
+version = "2.1.0"
+description = "Donde el asfalto toca la cumbre — Telemetría determinista y periodización andina"
+readme = "README.md"
+requires-python = ">=3.11"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["backend/tests"]
@@ -9,3 +16,8 @@ asyncio_mode = "auto"
 filterwarnings = [
     "ignore::urllib3.exceptions.NotOpenSSLWarning",
 ]
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+include = '\.pyi?$'

@@ -52,9 +52,7 @@ async def test_db_session():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    session_maker = async_sessionmaker(
-        bind=engine, class_=AsyncSession, expire_on_commit=False
-    )
+    session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
     async with session_maker() as session:
         yield session
 
@@ -65,9 +63,7 @@ class TestPostgresRepositoriesIntegration:
     """Integration suite verifying relational models, constraints, and repositories."""
 
     @pytest.mark.asyncio
-    async def test_profile_and_goal_persistence_lifecycle(
-        self, test_db_session: AsyncSession
-    ) -> None:
+    async def test_profile_and_goal_persistence_lifecycle(self, test_db_session: AsyncSession) -> None:
         """Verify user, athlete profile, and goal creation, retrieval, and baseline updates."""
         # 1. Create User
         user_id = str(uuid.uuid4())
@@ -138,9 +134,7 @@ class TestPostgresRepositoriesIntegration:
         assert all_goals[0].goal_id == goal.goal_id
 
     @pytest.mark.asyncio
-    async def test_activity_persistence_and_sha256_deduplication(
-        self, test_db_session: AsyncSession
-    ) -> None:
+    async def test_activity_persistence_and_sha256_deduplication(self, test_db_session: AsyncSession) -> None:
         """Verify activity insertion, SHA-256 deduplication check, and summary storage."""
         # Setup User and Profile
         user_id = str(uuid.uuid4())
@@ -236,15 +230,11 @@ class TestPostgresRepositoriesIntegration:
         assert activities_list[0].activity_id == activity.activity_id
 
     @pytest.mark.asyncio
-    async def test_ingestion_job_tracking_lifecycle(
-        self, test_db_session: AsyncSession
-    ) -> None:
+    async def test_ingestion_job_tracking_lifecycle(self, test_db_session: AsyncSession) -> None:
         """Verify ingestion job creation, progress tracking, and terminal status updates."""
         user_id = str(uuid.uuid4())
         profile_id = str(uuid.uuid4())
-        test_db_session.add(
-            UserModel(id=user_id, email="job_user@paramo.ec", password_hash="x", full_name="Job User")
-        )
+        test_db_session.add(UserModel(id=user_id, email="job_user@paramo.ec", password_hash="x", full_name="Job User"))
         await test_db_session.flush()
 
         # Save profile

@@ -92,6 +92,13 @@ def get_default_session_factory() -> async_sessionmaker[AsyncSession]:
     return _default_session_factory
 
 
+def set_default_engine_and_session(engine: AsyncEngine, session_factory: async_sessionmaker[AsyncSession]) -> None:
+    """Explicitly set or override the default application engine and session factory."""
+    global _default_engine, _default_session_factory
+    _default_engine = engine
+    _default_session_factory = session_factory
+
+
 @asynccontextmanager
 async def get_async_session(
     session_factory: Optional[async_sessionmaker[AsyncSession]] = None,

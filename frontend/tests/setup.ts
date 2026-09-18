@@ -37,5 +37,8 @@ if (typeof File !== 'undefined' && !File.prototype.arrayBuffer) {
   };
 }
 
-// Polyfill scrollTo
+// Polyfill scrollTo and scrollIntoView for jsdom
 window.scrollTo = () => {};
+if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}

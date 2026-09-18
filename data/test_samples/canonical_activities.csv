@@ -1,0 +1,4 @@
+date,sport_type,duration_minutes,distance_km,elevation_gain_m,avg_heart_rate,session_rpe
+2026-09-10T07:00:00Z,TRAIL_RUN,75,12.5,650,152,7
+2026-09-12T06:30:00Z,ROAD_RUN,50,10.0,45,145,6
+2026-09-14T08:00:00Z,STRENGTH,45,0,0,120,8

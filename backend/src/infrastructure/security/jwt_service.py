@@ -52,10 +52,14 @@ class RSAJwtSecurityService(SecurityService):
                 format=serialization.PrivateFormat.PKCS8,
                 encryption_algorithm=serialization.NoEncryption(),
             ).decode("utf-8")
-            self._public_key_pem = key.public_key().public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            ).decode("utf-8")
+            self._public_key_pem = (
+                key.public_key()
+                .public_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
+                )
+                .decode("utf-8")
+            )
 
     @property
     def public_key_pem(self) -> str:

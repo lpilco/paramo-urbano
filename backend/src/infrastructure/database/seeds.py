@@ -36,9 +36,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("DataSeeder")
 
-ROOT_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../../../")
-)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
 SEEDS_DIR = os.path.join(ROOT_DIR, "data", "seeds")
 
 
@@ -74,9 +72,7 @@ async def seed_athlete_from_dict(
         logger.info(f"User '{email}' already exists (id={user_id}).")
 
         # Retrieve profile
-        profile_stmt = select(AthleteProfileModel).where(
-            AthleteProfileModel.user_id == user_id
-        )
+        profile_stmt = select(AthleteProfileModel).where(AthleteProfileModel.user_id == user_id)
         profile_res = await session.execute(profile_stmt)
         existing_profile = profile_res.scalar_one_or_none()
         profile_id = str(existing_profile.id) if existing_profile else str(uuid.uuid4())
@@ -143,15 +139,12 @@ async def seed_athlete_from_dict(
 
         # Generate deterministic cryptographic SHA-256 for synthetic session
         raw_seed_str = (
-            f"{profile_id}_{started_at.strftime('%Y%m%d%H%M')}_"
-            f"{act['sport_category']}_{act['duration_seconds']}"
+            f"{profile_id}_{started_at.strftime('%Y%m%d%H%M')}_" f"{act['sport_category']}_{act['duration_seconds']}"
         )
         file_hash = hashlib.sha256(raw_seed_str.encode("utf-8")).hexdigest()
 
         # Check deduplication
-        act_stmt = select(ActivityModel).where(
-            ActivityModel.file_hash_sha256 == file_hash
-        )
+        act_stmt = select(ActivityModel).where(ActivityModel.file_hash_sha256 == file_hash)
         act_res = await session.execute(act_stmt)
         if act_res.scalar_one_or_none() is not None:
             continue
@@ -222,9 +215,7 @@ async def seed_database(
                 logger.warning(
                     f"Configured database unreachable ({exc}). Falling back to local SQLite: paramo_urbano_dev.db"
                 )
-                engine, session_factory = create_engine_and_session(
-                    "sqlite+aiosqlite:///paramo_urbano_dev.db"
-                )
+                engine, session_factory = create_engine_and_session("sqlite+aiosqlite:///paramo_urbano_dev.db")
                 await init_db_schema(engine)
             else:
                 raise

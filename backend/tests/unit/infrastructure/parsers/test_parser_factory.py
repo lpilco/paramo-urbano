@@ -52,12 +52,8 @@ class TestParserFactory:
 
     def test_detects_by_mime_type(self, factory: ParserFactory) -> None:
         """Verify resolution via MIME type header."""
-        assert isinstance(
-            factory.create_parser(mime_type="application/vnd.ant.fit"), FitParser
-        )
-        assert isinstance(
-            factory.create_parser(mime_type="application/gpx+xml"), GpxParser
-        )
+        assert isinstance(factory.create_parser(mime_type="application/vnd.ant.fit"), FitParser)
+        assert isinstance(factory.create_parser(mime_type="application/gpx+xml"), GpxParser)
         assert isinstance(factory.create_parser(mime_type="text/csv"), CsvMatcher)
 
     def test_rejects_unsupported_format(self, factory: ParserFactory) -> None:
@@ -79,4 +75,3 @@ class TestParserFactory:
         sample_csv = b"Fecha,Distancia,Tiempo\n2026-09-18,5000,1200\n"
         parser = factory.create_parser(file_bytes=sample_csv)
         assert isinstance(parser, CsvMatcher)
-

@@ -47,9 +47,7 @@ class AthleteProfileRepository(ABC):
         pass
 
     @abstractmethod
-    async def update_workload_baselines(
-        self, profile_id: str, ctl: float, atl: float
-    ) -> None:
+    async def update_workload_baselines(self, profile_id: str, ctl: float, atl: float) -> None:
         """Update Chronic Training Load (CTL) and Acute Training Load (ATL) baselines.
 
         Args:

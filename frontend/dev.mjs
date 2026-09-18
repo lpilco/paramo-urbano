@@ -88,8 +88,45 @@ const server = http.createServer((req, res) => {
       'Content-Type': contentType,
       'Cache-Control': 'no-cache',
     });
-    res.end(content);
+    if (req.method === 'HEAD') {
+      res.end();
+    } else {
+      res.end(content);
+    }
   });
+});
+
+server.on('clientError', (err, socket) => {
+  if (err.code === 'ECONNRESET' || !socket.writable) {
+    return;
+  }
+  socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[Frontend Server] Uncaught exception:', err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[Frontend Server] Unhandled rejection:', reason);
+});
+
+process.on('SIGINT', () => {
+  console.log('[Frontend Server] Received SIGINT');
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('[Frontend Server] Received SIGTERM');
+  process.exit(0);
+});
+
+process.on('SIGHUP', () => {
+  console.log('[Frontend Server] Received SIGHUP (ignoring)');
+});
+
+process.on('exit', (code) => {
+  console.log(`[Frontend Server] Process exiting with code: ${code}`);
 });
 
 server.listen(port, host, () => {

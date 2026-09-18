@@ -48,15 +48,11 @@ class MinioStorageAdapter(BlobStorageClient):
         self.endpoint = endpoint or os.getenv("MINIO_ENDPOINT", "localhost")
         self.port = port or int(os.getenv("MINIO_PORT", "9000"))
         self.access_key = access_key or os.getenv("MINIO_ROOT_USER", "minio_admin")
-        self.secret_key = secret_key or os.getenv(
-            "MINIO_ROOT_PASSWORD", "minio_secure_pass"
-        )
+        self.secret_key = secret_key or os.getenv("MINIO_ROOT_PASSWORD", "minio_secure_pass")
 
         env_secure = os.getenv("MINIO_USE_SSL", "false").lower() in ("true", "1")
         self.secure = secure if secure is not None else env_secure
-        self.bucket_name = bucket_name or os.getenv(
-            "STORAGE_BUCKET_RAW_ACTIVITIES", self.DEFAULT_BUCKET
-        )
+        self.bucket_name = bucket_name or os.getenv("STORAGE_BUCKET_RAW_ACTIVITIES", self.DEFAULT_BUCKET)
 
         self.use_in_memory = use_in_memory
         self._memory_store: Dict[str, bytes] = {}
@@ -161,9 +157,7 @@ class MinioStorageAdapter(BlobStorageClient):
             return self._memory_store[file_key]
 
         if self.use_in_memory or self._client is None:
-            raise FileNotFoundError(
-                f"Object key '{file_key}' not found in storage bucket '{self.bucket_name}'."
-            )
+            raise FileNotFoundError(f"Object key '{file_key}' not found in storage bucket '{self.bucket_name}'.")
 
         def _download() -> bytes:
             assert self._client is not None
@@ -173,9 +167,7 @@ class MinioStorageAdapter(BlobStorageClient):
                 return response.read()
             except S3Error as err:
                 if err.code in ("NoSuchKey", "ResourceNotFound"):
-                    raise FileNotFoundError(
-                        f"Object key '{file_key}' not found in bucket '{self.bucket_name}'."
-                    )
+                    raise FileNotFoundError(f"Object key '{file_key}' not found in bucket '{self.bucket_name}'.")
                 raise
             finally:
                 if response is not None:

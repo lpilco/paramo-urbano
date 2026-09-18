@@ -143,9 +143,7 @@ class TelemetryWorker:
                     file_bytes=raw_bytes,
                     file_name=file_name,
                 )
-                parse_result = self.parse_use_case.execute(
-                    request, fail_on_duplicate=False
-                )
+                parse_result = self.parse_use_case.execute(request, fail_on_duplicate=False)
                 canonical = parse_result.canonical_record
 
                 await job_repo.update_status(
@@ -157,11 +155,7 @@ class TelemetryWorker:
 
                 # 4. Resolve source format and determine training load
                 ext = file_name.split(".")[-1].upper() if "." in file_name else "FIT"
-                source_type = (
-                    SourceType(ext)
-                    if ext in SourceType.__members__
-                    else SourceType.FIT
-                )
+                source_type = SourceType(ext) if ext in SourceType.__members__ else SourceType.FIT
 
                 # Deterministic load computation
                 duration_min = max(1.0, canonical.duration_minutes)
@@ -173,21 +167,11 @@ class TelemetryWorker:
                 computed_load = load_result.load_value
 
                 # Update physiological EWMA and ACWR if profile exists
-                profile_model = await profile_repo.get_profile_by_id(
-                    athlete_profile_id
-                )
+                profile_model = await profile_repo.get_profile_by_id(athlete_profile_id)
                 if profile_model is not None:
                     # Retrieve baseline from profile
-                    prev_ctl = (
-                        profile_model.current_ctl
-                        if hasattr(profile_model, "current_ctl")
-                        else 0.0
-                    )
-                    prev_atl = (
-                        profile_model.current_atl
-                        if hasattr(profile_model, "current_atl")
-                        else 0.0
-                    )
+                    prev_ctl = profile_model.current_ctl if hasattr(profile_model, "current_ctl") else 0.0
+                    prev_atl = profile_model.current_atl if hasattr(profile_model, "current_atl") else 0.0
                     metrics = self.banister.step(
                         current_ctl=prev_ctl,
                         current_atl=prev_atl,

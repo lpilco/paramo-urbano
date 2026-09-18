@@ -81,13 +81,15 @@ class CreateAthleteGoalUseCase:
                 f"(target_elevation_gain_m > 0), received: {request.target_elevation_gain_m}."
             )
 
+        target_dist = request.distance_km
+
         goal_id = str(uuid.uuid4())
         goal_entity = Goal(
             goal_id=goal_id,
             athlete_profile_id=athlete_profile_id,
             discipline=discipline_enum,
             subgoal_type=subgoal_enum,
-            target_distance_km=request.target_distance_km,
+            target_distance_km=target_dist,
             target_elevation_gain_m=request.target_elevation_gain_m,
             target_date=request.target_date,
             available_days_per_week=request.available_days_per_week,
@@ -102,10 +104,14 @@ class CreateAthleteGoalUseCase:
             discipline=saved_goal.discipline.value,
             subgoal_type=saved_goal.subgoal_type.value,
             target_distance_km=saved_goal.target_distance_km,
+            custom_distance_km=saved_goal.target_distance_km,
             target_elevation_gain_m=saved_goal.target_elevation_gain_m,
             target_date=saved_goal.target_date,
             available_days_per_week=saved_goal.available_days_per_week,
+            preferred_plan_view=request.preferred_plan_view or "WEEKLY",
             days_to_target=saved_goal.days_to_target(today),
             weeks_to_target=saved_goal.weeks_to_target(today),
+            status="INITIALIZED",
+            redirect_url="/planner",
             created_at=saved_goal.created_at.isoformat(),
         )

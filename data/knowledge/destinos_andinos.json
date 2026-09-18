@@ -1,0 +1,260 @@
+[
+  {
+    "id": "rucu-pichincha",
+    "name": "Rucu Pichincha",
+    "altitudinal_floor": "MEDIA_MONTANA",
+    "altitudinal_range": "3.500 - 4.800 msnm",
+    "summit_elevation_m": 4696,
+    "elevation_gain_m": 850,
+    "coordinates": {
+      "latitude": -0.1983,
+      "longitude": -78.5636
+    },
+    "location_province": "Pichincha (Quito)",
+    "approach_refuges": [
+      {
+        "name": "Refugio TelefériQo Cruz Loma",
+        "altitude_m": 3945,
+        "type": "Estación base y cafetería de altura"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Casco de escalada (zona del Paso de la Muerte / rocas sueltas)",
+      "Botas de trekking con buen agarre o zapatillas técnicas de trail",
+      "Bastones de trekking telescópicos",
+      "Tercera capa impermeable/cortavientos (Gore-Tex o similar)",
+      "Guantes térmicos ligeros y gorro",
+      "Manta térmica de supervivencia"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Altitud > 4.500 m: disminución de la presión parcial de oxígeno del ~40%.",
+      "Se recomienda aclimatación previa en Quito (2.850 m) de al menos 48-72 horas.",
+      "Mantener hidratación constante con electrolitos (600-800 mg Na/L) y ritmo aeróbico en Zona 2."
+    ],
+    "maate_requirements": [
+      "Registro de ingreso obligatorio en el puesto de guardaparques / TelefériQo",
+      "Prohibido acampar fuera de zonas designadas",
+      "Respetar el sendero señalizado para evitar erosión del pajonal andino"
+    ],
+    "aseguim_guide_mandatory": false,
+    "aseguim_notes": "No reglamentariamente obligatorio para senderistas experimentados en la ruta normal, pero altamente recomendado para el paso de la muerte, arenal o condiciones de niebla densa."
+  },
+  {
+    "id": "el-corazon",
+    "name": "Volcán El Corazón",
+    "altitudinal_floor": "MEDIA_MONTANA",
+    "altitudinal_range": "3.500 - 4.800 msnm",
+    "summit_elevation_m": 4788,
+    "elevation_gain_m": 1150,
+    "coordinates": {
+      "latitude": -0.5328,
+      "longitude": -78.6706
+    },
+    "location_province": "Pichincha (Machachi)",
+    "approach_refuges": [
+      {
+        "name": "Refugio Base El Chaupi / Hosterías locales",
+        "altitude_m": 3300,
+        "type": "Alojamiento rural de aproximación"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Casco de montaña (pasos de roca hacia la cumbre)",
+      "Botas de media montaña semirrígidas o trekking reforzado",
+      "Bastones de trekking",
+      "Sistema de 3 capas térmicas e impermeables",
+      "Protección solar UV factor 50+ y gafas de sol categoría 3",
+      "Botiquín con analgésicos y sales de rehidratación"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Piso de pajonal y arista rocosa sobre los 4.500 m.",
+      "Excelente cumbre de aclimatación intermedia previa al Cotopaxi o Chimborazo.",
+      "Vientos fríos frecuentes del páramo que aumentan la sensación térmica bajo cero."
+    ],
+    "maate_requirements": [
+      "Registro en el punto de control de acceso comunal El Chaupi",
+      "Conservación de la Reserva Ecológica Los Ilinizas"
+    ],
+    "aseguim_guide_mandatory": false,
+    "aseguim_notes": "Recomendado para la arista final y orientación en caso de nubosidad cerrada."
+  },
+  {
+    "id": "illiniza-norte",
+    "name": "Illiniza Norte",
+    "altitudinal_floor": "MEDIA_MONTANA",
+    "altitudinal_range": "3.500 - 4.800 msnm (Cumbre a 5.126 m)",
+    "summit_elevation_m": 5126,
+    "elevation_gain_m": 1250,
+    "coordinates": {
+      "latitude": -0.6606,
+      "longitude": -78.7144
+    },
+    "location_province": "Pichincha / Cotopaxi",
+    "approach_refuges": [
+      {
+        "name": "Refugio Nuevos Horizontes",
+        "altitude_m": 4750,
+        "type": "Refugio de alta montaña con literas y cocina"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Casco de escalada homologado (UIAA/CE) OBLIGATORIO por caída constante de piedras en el Paso del Hombre",
+      "Arnés de escalada y cabo de anclaje (para aseguramiento en pasos expuestos)",
+      "Botas de montaña semirrígidas o rígidas con suela Vibram",
+      "Crampones ligeros o microspikes si hay escarcha/verglás en la roca",
+      "Guantes de escalada con refuerzo de cuero",
+      "Chaqueta de plumas o fibra sintética de alta densidad y cortavientos Gore-Tex"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Supera la barrera de los 5.000 metros; riesgo moderado-alto de Mal Agudo de Montaña (MAM).",
+      "No intentar sin haber hecho cumbres previas de más de 4.500 m (ej. Rucu Pichincha, Corazón o Fuya Fuya).",
+      "Descenso inmediato si se presenta cefalea pulsátil, náusea o ataxia."
+    ],
+    "maate_requirements": [
+      "Registro obligatorio en el control de La Virgen (Reserva Ecológica Los Ilinizas)",
+      "Reserva confirmada en el Refugio Nuevos Horizontes si se pernocta"
+    ],
+    "aseguim_guide_mandatory": true,
+    "aseguim_notes": "OBLIGATORIO por Resolución Ministerial MAATE/MINTUR: Terreno técnico de clase 3/4 con exposición a caídas y pasos de trepada en roca suelta (Paso del Hombre)."
+  },
+  {
+    "id": "volcan-cotopaxi",
+    "name": "Volcán Cotopaxi",
+    "altitudinal_floor": "ALTA_MONTANA",
+    "altitudinal_range": "> 4.800 msnm (Glaciar activo)",
+    "summit_elevation_m": 5897,
+    "elevation_gain_m": 1300,
+    "coordinates": {
+      "latitude": -0.6838,
+      "longitude": -78.4372
+    },
+    "location_province": "Cotopaxi",
+    "approach_refuges": [
+      {
+        "name": "Refugio José F. Rivas",
+        "altitude_m": 4864,
+        "type": "Refugio oficial del Parque Nacional Cotopaxi"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Botas de alta montaña plásticas o dobles rígidas aptas para crampón automático",
+      "Crampones de 12 puntas de acero templado con antizuecos",
+      "Piolet de marcha clásico de alta montaña",
+      "Arnés de escalada certificado con mosquetones de seguridad y cordino para prusik",
+      "Casco de montaña homologado UIAA/CE",
+      "Cuerda dinámica de cordada (mínimo 50m / 9.8mm)",
+      "Gafas de glaciar categoría 4 con protección lateral UV",
+      "Mitones térmicos de expedición (-20°C) y guantes interiores de seda/lana",
+      "Sistema completo de 3 capas: térmico, polar/pluma y hardshell impermeable",
+      "Linterna frontal potente con baterías de litio resistentes al frío extremo"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Hipoxia severa: densidad atmosférica y presión de O2 al 50% respecto al nivel del mar.",
+      "Se requiere proceso estricto de aclimatación escalonada durante al menos 7-14 días.",
+      "Monitorear rigurosamente saturación de oxígeno (SpO2) y frecuencia cardíaca en reposo.",
+      "Riesgo de Edema Pulmonar de Altitud (HAPE) y Edema Cerebral de Altitud (HACE) en caso de ascensos rápidos."
+    ],
+    "maate_requirements": [
+      "Permiso oficial de ascenso expedido por la administración del Parque Nacional Cotopaxi (MAATE)",
+      "Registro de cordada con ratio máximo de 2 clientes por 1 guía certificado",
+      "Seguro de rescate y accidentes en montaña vigente",
+      "Respeto estricto a las alertas vulcanológicas del Instituto Geofísico de la EPN"
+    ],
+    "aseguim_guide_mandatory": true,
+    "aseguim_notes": "ESTRICTAMENTE OBLIGATORIO por Ley y Resolución Ministerial MAATE/MINTUR. Prohibido el ingreso al glaciar sin Guía Profesional de Alta Montaña certificado por ASEGUIM o UIAGM/IFMGA."
+  },
+  {
+    "id": "volcan-chimborazo",
+    "name": "Volcán Chimborazo",
+    "altitudinal_floor": "ALTA_MONTANA",
+    "altitudinal_range": "> 4.800 msnm (El punto más cercano al Sol)",
+    "summit_elevation_m": 6263,
+    "elevation_gain_m": 1450,
+    "coordinates": {
+      "latitude": -1.4693,
+      "longitude": -78.8169
+    },
+    "location_province": "Chimborazo",
+    "approach_refuges": [
+      {
+        "name": "Refugio Hermanos Carrel",
+        "altitude_m": 4850,
+        "type": "Refugio vehicular base"
+      },
+      {
+        "name": "Refugio Whymper",
+        "altitude_m": 5000,
+        "type": "Refugio de altura"
+      },
+      {
+        "name": "Campamento Alto El Castillo / Domos Stübel",
+        "altitude_m": 5300,
+        "type": "Campamento avanzado"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Botas dobles o triples de alta montaña para temperaturas de -25°C",
+      "Crampones técnicos de acero rígido",
+      "Piolet técnico o semitécnico",
+      "Casco de montaña y arnés técnico con tornillos de hielo y estacas de nieve",
+      "Cuerda dinámica de glaciar homologada",
+      "Gafas de glaciar categoría 4 y antiparras de ventisca (goggles)",
+      "Traje completo o chaqueta de duvet/pluma de 800+ cuins",
+      "Baliza de localización satelital o comunicador inReach"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Máxima exigencia fisiológica en los Andes del Norte (> 6.000 m).",
+      "La cumbre Whymper requiere una capacidad aeróbica formidable y resistencia muscular prolongada (> 9-12 horas continuas).",
+      "Aclimatación mandatoria previa haciendo cumbre en montañas de más de 5.000 m (ej. Cotopaxi, Cayambe o Illiniza Sur)."
+    ],
+    "maate_requirements": [
+      "Registro de entrada en la Reserva de Producción Faunística Chimborazo",
+      "Cumplimiento del ratio legal: máximo 2 montañistas por cada guía ASEGUIM",
+      "Inspección de equipamiento técnico por parte de los guardaparques"
+    ],
+    "aseguim_guide_mandatory": true,
+    "aseguim_notes": "ESTRICTAMENTE OBLIGATORIO por Resolución Ministerial. La ruta normal por El Castillo o El Corredor presenta peligro objetivo de caída de rocas y grietas profundas."
+  },
+  {
+    "id": "volcan-cayambe",
+    "name": "Volcán Cayambe",
+    "altitudinal_floor": "ALTA_MONTANA",
+    "altitudinal_range": "> 4.800 msnm (Tercera cumbre más alta de Ecuador)",
+    "summit_elevation_m": 5790,
+    "elevation_gain_m": 1150,
+    "coordinates": {
+      "latitude": 0.0247,
+      "longitude": -77.9897
+    },
+    "location_province": "Pichincha (Cayambe)",
+    "approach_refuges": [
+      {
+        "name": "Refugio Ruales-Oleas-Berge",
+        "altitude_m": 4600,
+        "type": "Refugio oficial del Parque Nacional Cayambe-Coca"
+      }
+    ],
+    "mandatory_technical_gear": [
+      "Botas rígidas de alta montaña con suela con aislamiento térmico",
+      "Crampones técnicos de 12 puntas",
+      "Piolet de marcha clásico y piolet tracción de apoyo",
+      "Arnés de glaciar, mosquetones HMS con seguro y cordinos para rescate en grietas",
+      "Casco de montaña con linterna frontal",
+      "Cuerda dinámica para travesía de glaciar activo",
+      "Chaqueta y pantalón impermeable cortavientos (mínimo 20.000 mm columna de agua)",
+      "Protección solar total y gafas para reflejo de nieve categoría 4"
+    ],
+    "hypoxia_acclimatization_alerts": [
+      "Glaciar muy activo con grietas masivas y seracs sobre los 5.100 m.",
+      "Altitud extrema con vientos intensos provenientes de la cuenca amazónica.",
+      "Monitorear signos de agotamiento físico y deshidratación severa por respiración hiperventilatoria fría."
+    ],
+    "maate_requirements": [
+      "Registro de ingreso en el Parque Nacional Cayambe-Coca (MAATE)",
+      "Pago de tarifas de refugio y verificación de credenciales de guía",
+      "Prohibición de acceso a solitarios o personas sin guía acreditado"
+    ],
+    "aseguim_guide_mandatory": true,
+    "aseguim_notes": "ESTRICTAMENTE OBLIGATORIO por Resolución Ministerial MAATE/MINTUR. Requiere navegación compleja entre grietas y puentes de nieve en el glaciar Hermoso."
+  }
+]

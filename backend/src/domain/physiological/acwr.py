@@ -57,9 +57,7 @@ class ACWRStatus:
             TypeError: If `zone` is not an ACWRZone instance.
         """
         if not isinstance(ratio, (int, float)) or isinstance(ratio, bool):
-            raise InvalidLoadError(
-                f"ACWR ratio must be numeric, received: {type(ratio).__name__} ({ratio!r})."
-            )
+            raise InvalidLoadError(f"ACWR ratio must be numeric, received: {type(ratio).__name__} ({ratio!r}).")
         if ratio < 0.0:
             raise InvalidLoadError(f"ACWR ratio cannot be negative, received: {ratio}.")
 
@@ -111,14 +109,16 @@ class ACWRStatus:
 
     def __hash__(self) -> int:
         """Return hash value for set and dict uniqueness."""
-        return hash((
-            self.__class__,
-            self._ratio,
-            self._zone,
-            self._requires_mandatory_rest,
-            self._freeze_weekly_increments,
-            self._recommendation,
-        ))
+        return hash(
+            (
+                self.__class__,
+                self._ratio,
+                self._zone,
+                self._requires_mandatory_rest,
+                self._freeze_weekly_increments,
+                self._recommendation,
+            )
+        )
 
     def __repr__(self) -> str:
         """Produce reproducible technical representation."""
@@ -160,9 +160,7 @@ class ACWREvaluator:
             InvalidLoadError: If `ratio` is negative or non-numeric.
         """
         if not isinstance(ratio, (int, float)) or isinstance(ratio, bool):
-            raise InvalidLoadError(
-                f"ACWR ratio must be numeric, received: {type(ratio).__name__} ({ratio!r})."
-            )
+            raise InvalidLoadError(f"ACWR ratio must be numeric, received: {type(ratio).__name__} ({ratio!r}).")
         if ratio < 0.0:
             raise InvalidLoadError(f"ACWR ratio cannot be negative, received: {ratio}.")
 
@@ -186,8 +184,7 @@ class ACWREvaluator:
                 requires_mandatory_rest=False,
                 freeze_weekly_increments=True,
                 recommendation=(
-                    "CAUTION ZONE: Elevated training strain. "
-                    "Freeze weekly volume increments to prevent overloading."
+                    "CAUTION ZONE: Elevated training strain. " "Freeze weekly volume increments to prevent overloading."
                 ),
             )
         if val >= self.SWEET_SPOT_MIN:
@@ -223,9 +220,7 @@ class ACWREvaluator:
         """
         for name, val in [("acute_load", acute_load), ("chronic_load", chronic_load)]:
             if not isinstance(val, (int, float)) or isinstance(val, bool):
-                raise InvalidLoadError(
-                    f"{name} must be numeric, received: {type(val).__name__} ({val!r})."
-                )
+                raise InvalidLoadError(f"{name} must be numeric, received: {type(val).__name__} ({val!r}).")
             if val < 0.0:
                 raise InvalidLoadError(f"{name} cannot be negative, received: {val}.")
 
@@ -235,9 +230,7 @@ class ACWREvaluator:
         if chronic_f == 0.0:
             if acute_f == 0.0:
                 return self.evaluate_ratio(0.0)
-            raise ZeroDivisionWorkloadError(
-                "Chronic load cannot be zero when acute load is positive (undefined ACWR)."
-            )
+            raise ZeroDivisionWorkloadError("Chronic load cannot be zero when acute load is positive (undefined ACWR).")
 
         ratio = acute_f / chronic_f
         return self.evaluate_ratio(ratio)

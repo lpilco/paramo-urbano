@@ -50,6 +50,7 @@ class GetAthleteActivitiesUseCase:
         for act in activities:
             rpe_val = act.session_rpe.value if act.session_rpe is not None else None
             load_val = act.foster_load if act.foster_load is not None else act.tss_score
+            avg_hr_val = act.avg_hr.bpm if getattr(act, "avg_hr", None) is not None else None
 
             items.append(
                 ActivitySummaryDTO(
@@ -61,6 +62,7 @@ class GetAthleteActivitiesUseCase:
                     distance_km=act.distance_km,
                     elevation_gain_m=act.elevation_gain_meters,
                     session_rpe=rpe_val,
+                    avg_hr=avg_hr_val,
                     calculated_load=load_val,
                     tss_score=act.tss_score,
                     processing_status=act.processing_status.value,

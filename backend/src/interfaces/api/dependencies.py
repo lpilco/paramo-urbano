@@ -14,6 +14,9 @@ from backend.src.application.interfaces.profile_repository import (
 from backend.src.application.interfaces.queue_interface import JobQueueProducer
 from backend.src.application.interfaces.security_service import SecurityService
 from backend.src.application.interfaces.user_repository import UserRepository
+from backend.src.application.use_cases.activities.batch_log_manual_activities import (
+    BatchLogManualActivitiesUseCase,
+)
 from backend.src.application.use_cases.activities.get_athlete_activities import (
     GetAthleteActivitiesUseCase,
 )
@@ -143,6 +146,16 @@ def get_log_manual_activity_use_case(
     profile_repo: AthleteProfileRepository = Depends(get_profile_repository),
 ) -> LogManualActivityUseCase:
     return LogManualActivityUseCase(
+        activity_repository=activity_repo,
+        profile_repository=profile_repo,
+    )
+
+
+def get_batch_log_manual_activities_use_case(
+    activity_repo: ActivityRepository = Depends(get_activity_repository),
+    profile_repo: AthleteProfileRepository = Depends(get_profile_repository),
+) -> BatchLogManualActivitiesUseCase:
+    return BatchLogManualActivitiesUseCase(
         activity_repository=activity_repo,
         profile_repository=profile_repo,
     )

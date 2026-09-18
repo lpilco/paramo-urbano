@@ -1,17 +1,18 @@
-# Páramo Urbano (v2.0.0 Core)
+# Páramo Urbano (v2.1.0)
 
 > **«Donde el asfalto toca la cumbre»**  
-> *Telemetría determinista y periodización adaptativa para atletas de asfalto, trail running y montañismo andino.*
+> *Telemetría determinista, periodización adaptativa e inteligencia andina para atletas de asfalto, trail running y montañismo.*
 
 ---
 
-[![MVP Status](https://img.shields.io/badge/MVP_Release-v2.0.0--core-emerald?style=for-the-badge&logo=git)](https://github.com/lpilco/paramo-urbano)
-[![Quality Gate](https://img.shields.io/badge/Quality_Gate-Passing_100%25-brightgreen?style=for-the-badge&logo=checkmarx)](https://github.com/lpilco/paramo-urbano)
-[![Tests Passing](https://img.shields.io/badge/Tests-308_Passed-success?style=for-the-badge&logo=pytest)](https://github.com/lpilco/paramo-urbano)
+[![Release](https://img.shields.io/badge/Release-v2.1.0-emerald?style=for-the-badge&logo=git)](https://github.com/lpilco/paramo-urbano)
+[![Quality Gate](https://img.shields.io/badge/Quality_Gate-Certified_100%25-brightgreen?style=for-the-badge&logo=checkmarx)](https://github.com/lpilco/paramo-urbano)
+[![Tests Passing](https://img.shields.io/badge/Tests-349_Passed-success?style=for-the-badge&logo=pytest)](https://github.com/lpilco/paramo-urbano)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-blue?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/lpilco/paramo-urbano)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean_Arch_%26_DDD-blue?style=for-the-badge)](https://github.com/lpilco/paramo-urbano)
 [![Python](https://img.shields.io/badge/Backend-Python_3.11+_|_FastAPI-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![TypeScript](https://img.shields.io/badge/Frontend-React_18_|_TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://react.dev)
-[![Docker](https://img.shields.io/badge/Infrastructure-PostgreSQL_|_Redis_|_MinIO-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Docker](https://img.shields.io/badge/Infrastructure-Docker_Compose_|_Staging-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
 [![Proprietary](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](https://github.com/lpilco/paramo-urbano)
 
 ---
@@ -182,11 +183,12 @@ ruff check backend/
 mypy backend/src/
 ```
 
-### Resultados de la Certificación Quality Gate (Paso 7)
-* **308 pruebas unitarias, de integración y E2E aprobadas** (`100% Passing`).
-* **Cobertura global de backend:** `87%` en módulos de producción.
+### Resultados de la Certificación Quality Gate (v2.1.0)
+* **349 pruebas automatizadas aprobadas al 100%** (321 pruebas Backend + 28 pruebas Frontend SPA).
+* **100% de cobertura de código certificada** en el núcleo fisiológico determinista (`backend.src.domain.physiological`).
+* **Calidad estática estricta:** Flake8 clean, Black formatted, Mypy strict typing y ESLint sin advertencias.
 * **Cero dependencias circulares:** Dominio fisiológico (`backend/src/domain`) 100% desacoplado de frameworks e infraestructura.
-* **Tolerancia a fallos:** Ingesta resiliente de archivos con CRC-16 estricto, mitigación de picos de altitud barométrica y protección con SHA-256 contra duplicados.
+* **Tolerancia a fallos:** Ingesta resiliente de archivos con CRC-16 estricto, mitigación de picos de altitud barométrica, fallback a SQLite para desarrollo local y protección con SHA-256 contra duplicados.
 
 ---
 
@@ -197,15 +199,19 @@ mypy backend/src/
 | `POST` | `/api/v1/auth/register` | Registro de atleta y creación de perfil basal |
 | `POST` | `/api/v1/auth/login` | Autenticación y generación de par de tokens JWT |
 | `POST` | `/api/v1/activities/upload` | Carga multipart asíncrona de archivos `.FIT`, `.GPX` y `.CSV` (Retorna HTTP 202 con `job_id`) |
+| `POST` | `/api/v1/activities/batch` | Ingesta masiva y registro manual múltiple de sesiones deportivas |
 | `GET` | `/api/v1/activities/jobs/{id}` | Sondeo de estado del procesamiento de telemetría |
 | `GET` | `/api/v1/activities/` | Listado paginado de actividades del atleta autenticado |
 | `GET` | `/api/v1/diagnostics/physiological-readiness` | Curvas de Fitness ($CTL$), Fatiga ($ATL$), Forma ($TSB$) y ratio $ACWR$ |
 | `POST` | `/api/v1/goals/` | Creación de objetivo deportivo (asfalto, trail vertical o trekking) |
 | `GET` | `/api/v1/plans/current` | Plan de entrenamiento periodizado con microciclos adaptativos |
+| `POST` | `/api/v1/assistant/chat` | Asistente outdoor andino, prevención de MAM y escalamiento a WhatsApp |
+| `GET` | `/api/v1/assistant/destinations` | Directorio de fichas técnicas de cumbres y parques nacionales |
+| `GET` | `/health` | Chequeo de liveness y readiness del servicio (`status: ok, version: 2.1.0`) |
 
 ---
 
 ## ⚖️ 7. Licencia y Créditos
 
-**Páramo Urbano (v2.0.0 Core)** es propiedad exclusiva de ingeniería interna.  
+**Páramo Urbano (v2.1.0)** es propiedad exclusiva de ingeniería interna.  
 Diseñado y desarrollado con rigor de alta montaña para atletas que transforman el asfalto en sendero y la altitud en su mayor fortaleza.

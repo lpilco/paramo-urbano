@@ -109,26 +109,20 @@ class TestSessionLoadCalculator:
         assert load.load_value == pytest.approx(122.0, abs=0.01)
 
     @pytest.mark.parametrize("invalid_rpe", [0, 11, 15, -1, 5.5, "6", True, None])
-    def test_calculate_foster_srpe_invalid_rpe_scale(
-        self, calculator: SessionLoadCalculator, invalid_rpe
-    ) -> None:
+    def test_calculate_foster_srpe_invalid_rpe_scale(self, calculator: SessionLoadCalculator, invalid_rpe) -> None:
         """Test RPE values outside [1, 10] or non-integer raise InvalidRPEError."""
         with pytest.raises(InvalidRPEError):
             calculator.calculate_foster_srpe(duration_minutes=40, rpe=invalid_rpe)  # type: ignore
 
     @pytest.mark.parametrize("invalid_dur", [0, -10, "45", None])
-    def test_calculate_foster_srpe_invalid_duration(
-        self, calculator: SessionLoadCalculator, invalid_dur
-    ) -> None:
+    def test_calculate_foster_srpe_invalid_duration(self, calculator: SessionLoadCalculator, invalid_dur) -> None:
         """Test duration <= 0 or non-numeric raises InvalidLoadError."""
         with pytest.raises(InvalidLoadError):
             calculator.calculate_foster_srpe(duration_minutes=invalid_dur, rpe=5)  # type: ignore
 
     # --- rTSS Tests ---
 
-    def test_calculate_rtss_one_hour_threshold_calibration(
-        self, calculator: SessionLoadCalculator
-    ) -> None:
+    def test_calculate_rtss_one_hour_threshold_calibration(self, calculator: SessionLoadCalculator) -> None:
         """Test 1 hour at threshold speed produces exactly 100.0 rTSS."""
         # 3600 seconds at 4.0 m/s with 4.0 m/s threshold
         # IF = 1.0, rTSS = (3600 * 1.0 / 3600) * 100 = 100.0
@@ -141,9 +135,7 @@ class TestSessionLoadCalculator:
         assert load.intensity_factor == 1.0
         assert load.method == LoadCalculationMethod.RTSS
 
-    def test_calculate_rtss_with_speed_value_objects(
-        self, calculator: SessionLoadCalculator
-    ) -> None:
+    def test_calculate_rtss_with_speed_value_objects(self, calculator: SessionLoadCalculator) -> None:
         """Test rTSS calculation with Speed instances."""
         current_speed = Speed.from_kmh(12.0)  # ~3.33 m/s
         threshold_speed = Speed.from_kmh(15.0)  # ~4.17 m/s
@@ -167,9 +159,7 @@ class TestSessionLoadCalculator:
             ("3600", 3.5, 3.5),
         ],
     )
-    def test_calculate_rtss_invalid_duration(
-        self, calculator: SessionLoadCalculator, dur, speed, threshold
-    ) -> None:
+    def test_calculate_rtss_invalid_duration(self, calculator: SessionLoadCalculator, dur, speed, threshold) -> None:
         """Test non-positive or non-integer duration raises InvalidLoadError."""
         with pytest.raises(InvalidLoadError):
             calculator.calculate_rtss(dur, speed, threshold)  # type: ignore
@@ -185,18 +175,14 @@ class TestSessionLoadCalculator:
             (3.5, 14.0),  # > 12.5 m/s
         ],
     )
-    def test_calculate_rtss_invalid_speed_bounds(
-        self, calculator: SessionLoadCalculator, speed, threshold
-    ) -> None:
+    def test_calculate_rtss_invalid_speed_bounds(self, calculator: SessionLoadCalculator, speed, threshold) -> None:
         """Test speeds outside (0.0, 12.5] raise InvalidSpeedError."""
         with pytest.raises(InvalidSpeedError):
             calculator.calculate_rtss(1800, speed, threshold)
 
     # --- hrTSS Tests ---
 
-    def test_calculate_hrtss_one_hour_lthr_calibration(
-        self, calculator: SessionLoadCalculator
-    ) -> None:
+    def test_calculate_hrtss_one_hour_lthr_calibration(self, calculator: SessionLoadCalculator) -> None:
         """Test 1 hour at LTHR produces exactly 100.0 hrTSS."""
         # 3600 seconds at 170 bpm with 170 bpm LTHR
         # IF = 1.0, hrTSS = 100.0
@@ -209,9 +195,7 @@ class TestSessionLoadCalculator:
         assert load.intensity_factor == 1.0
         assert load.method == LoadCalculationMethod.HRTSS
 
-    def test_calculate_hrtss_with_heart_rate_value_objects(
-        self, calculator: SessionLoadCalculator
-    ) -> None:
+    def test_calculate_hrtss_with_heart_rate_value_objects(self, calculator: SessionLoadCalculator) -> None:
         """Test hrTSS calculation with HeartRate Value Objects."""
         avg_hr = HeartRate(153)
         lthr = HeartRate(170)
@@ -235,9 +219,7 @@ class TestSessionLoadCalculator:
             (1800.5, 150, 170),
         ],
     )
-    def test_calculate_hrtss_invalid_duration(
-        self, calculator: SessionLoadCalculator, dur, hr, lthr
-    ) -> None:
+    def test_calculate_hrtss_invalid_duration(self, calculator: SessionLoadCalculator, dur, hr, lthr) -> None:
         """Test non-positive or non-integer duration raises InvalidLoadError."""
         with pytest.raises(InvalidLoadError):
             calculator.calculate_hrtss(dur, hr, lthr)  # type: ignore
@@ -245,18 +227,16 @@ class TestSessionLoadCalculator:
     @pytest.mark.parametrize(
         "hr,lthr",
         [
-            (25, 170),   # < 30 bpm
+            (25, 170),  # < 30 bpm
             (245, 170),  # > 240 bpm
-            (150, 29),   # < 30 bpm
+            (150, 29),  # < 30 bpm
             (150, 241),  # > 240 bpm
             (150.5, 170),  # not int
             ("150", 170),
             (150, True),
         ],
     )
-    def test_calculate_hrtss_invalid_heart_rates(
-        self, calculator: SessionLoadCalculator, hr, lthr
-    ) -> None:
+    def test_calculate_hrtss_invalid_heart_rates(self, calculator: SessionLoadCalculator, hr, lthr) -> None:
         """Test heart rates outside [30, 240] or non-integer raise InvalidHeartRateError."""
         with pytest.raises(InvalidHeartRateError):
             calculator.calculate_hrtss(1800, hr, lthr)  # type: ignore

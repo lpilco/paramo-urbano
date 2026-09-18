@@ -13,9 +13,7 @@ from backend.src.infrastructure.parsers.gpx_parser import (
     compute_haversine_distance,
 )
 
-FIXTURES_DIR = os.path.join(
-    os.path.dirname(__file__), "../../../../../data/fixtures"
-)
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "../../../../../data/fixtures")
 
 
 class TestGpxParser:
@@ -30,9 +28,7 @@ class TestGpxParser:
         with open(os.path.join(FIXTURES_DIR, "sample_trail.gpx"), "rb") as f:
             return f.read()
 
-    def test_parse_valid_gpx_track(
-        self, gpx_parser: GpxParser, valid_gpx_bytes: bytes
-    ) -> None:
+    def test_parse_valid_gpx_track(self, gpx_parser: GpxParser, valid_gpx_bytes: bytes) -> None:
         """Verify parsing of valid GPX file with 3D coordinates, time and HR extensions."""
         record = gpx_parser.parse(valid_gpx_bytes)
 
@@ -50,9 +46,7 @@ class TestGpxParser:
         assert record.file_hash is not None
         assert len(record.file_hash.value) == 64
 
-    def test_xxe_attack_blocked_with_security_exception(
-        self, gpx_parser: GpxParser
-    ) -> None:
+    def test_xxe_attack_blocked_with_security_exception(self, gpx_parser: GpxParser) -> None:
         """Verify XML External Entity (XXE) injection is detected and halted."""
         with open(os.path.join(FIXTURES_DIR, "xxe_attack.gpx"), "rb") as f:
             xxe_bytes = f.read()
@@ -74,16 +68,12 @@ class TestGpxParser:
         with pytest.raises(SecurityXmlAttackException):
             gpx_parser.parse(bomb_xml)
 
-    def test_malformed_xml_raises_corrupted_file_exception(
-        self, gpx_parser: GpxParser
-    ) -> None:
+    def test_malformed_xml_raises_corrupted_file_exception(self, gpx_parser: GpxParser) -> None:
         """Verify malformed non-XML payload raises CorruptedFileException."""
         with pytest.raises(CorruptedFileException):
             gpx_parser.parse(b"<gpx><trk><unclosed_tag>")
 
-    def test_empty_track_raises_corrupted_file_exception(
-        self, gpx_parser: GpxParser
-    ) -> None:
+    def test_empty_track_raises_corrupted_file_exception(self, gpx_parser: GpxParser) -> None:
         """Verify GPX file with zero track points raises CorruptedFileException."""
         empty_gpx = b"""<?xml version="1.0" encoding="UTF-8"?>
         <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
@@ -127,4 +117,3 @@ class TestGpxParser:
         </gpx>"""
         rec = gpx_parser.parse(gpx_content)
         assert rec.telemetry_points_count == 2
-

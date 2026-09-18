@@ -70,9 +70,7 @@ class AthleteProfile:
             raise EntityValidationError(f"Age must be an integer, received: {age!r}.")
 
         if age < self.MIN_AGE or age > self.MAX_AGE:
-            raise EntityValidationError(
-                f"Age {age} is outside supported boundaries [{self.MIN_AGE}, {self.MAX_AGE}]."
-            )
+            raise EntityValidationError(f"Age {age} is outside supported boundaries [{self.MIN_AGE}, {self.MAX_AGE}].")
 
         if not isinstance(weight_kg, (int, float)) or isinstance(weight_kg, bool):
             raise EntityValidationError(f"Weight must be numeric, received: {weight_kg!r}.")

@@ -109,8 +109,7 @@ class TestAthleteAndProfileEntities(unittest.TestCase):
         # Rest HR >= Max HR
         with self.assertRaises(EntityValidationError):
             AthleteProfile(
-                None, "u1", ExperienceLevel.ADVANCED, 25, 70.0,
-                rest_hr=HeartRate(180), max_hr=HeartRate(170)
+                None, "u1", ExperienceLevel.ADVANCED, 25, 70.0, rest_hr=HeartRate(180), max_hr=HeartRate(170)
             )
 
     def test_athlete_aggregate_creation_and_profile_attachment(self) -> None:
@@ -282,15 +281,13 @@ class TestActivityAndCanonicalRecord(unittest.TestCase):
         # Avg HR > Max HR
         with self.assertRaises(EntityValidationError):
             CanonicalActivityRecord(
-                None, SportCategory.ROAD_RUN, now, 1800, 5000.0, 50.0,
-                avg_hr=HeartRate(180), max_hr=HeartRate(160)
+                None, SportCategory.ROAD_RUN, now, 1800, 5000.0, 50.0, avg_hr=HeartRate(180), max_hr=HeartRate(160)
             )
 
         # Avg Speed > Max Speed
         with self.assertRaises(EntityValidationError):
             CanonicalActivityRecord(
-                None, SportCategory.ROAD_RUN, now, 1800, 5000.0, 50.0,
-                avg_speed=Speed(6.0), max_speed=Speed(4.0)
+                None, SportCategory.ROAD_RUN, now, 1800, 5000.0, 50.0, avg_speed=Speed(6.0), max_speed=Speed(4.0)
             )
 
     def test_manual_activity_foster_load_computation(self) -> None:

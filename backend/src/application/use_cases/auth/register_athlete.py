@@ -59,11 +59,7 @@ class RegisterAthleteUseCase:
             raise EntityValidationError(f"User with email '{request.email}' is already registered.")
 
         # Invariant: Strict biological boundary between resting and max heart rate
-        if (
-            request.rest_hr is not None
-            and request.max_hr is not None
-            and request.rest_hr >= request.max_hr
-        ):
+        if request.rest_hr is not None and request.max_hr is not None and request.rest_hr >= request.max_hr:
             raise BiometricConstraintViolationException(
                 f"Resting HR ({request.rest_hr} bpm) must be strictly lower than Max HR ({request.max_hr} bpm)."
             )
