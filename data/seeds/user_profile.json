@@ -1,0 +1,95 @@
+{
+  "user": {
+    "email": "atleta.andino@paramourbano.org",
+    "full_name": "Mateo Andino",
+    "password": "Password123!"
+  },
+  "profile": {
+    "experience_level": "ADVANCED",
+    "age": 32,
+    "weight_kg": 65.5,
+    "rest_hr": 42,
+    "max_hr": 190,
+    "vdot_score": 54.2,
+    "current_ctl": 58.0,
+    "current_atl": 49.0
+  },
+  "goal": {
+    "discipline": "TRAIL_RUNNING",
+    "subgoal_type": "TRAIL_MARATHON",
+    "custom_distance_km": 42.195,
+    "target_elevation_gain_m": 2400.0,
+    "mountain_altitude_category": "PARAMO_ANDINO",
+    "weeks_ahead": 16,
+    "available_days_per_week": 5
+  },
+  "activities": [
+    {
+      "source_type": "FIT",
+      "sport_category": "TRAIL_RUN",
+      "days_ago": 2,
+      "duration_seconds": 7200,
+      "distance_meters": 18500.0,
+      "elevation_gain_meters": 1150.0,
+      "tss_score": 145.0,
+      "session_rpe": 8,
+      "foster_load": 960.0,
+      "notes": "Ascenso al páramo, terreno técnico con lluvia fina y ráfagas de viento.",
+      "telemetry_summary": {
+        "avg_hr": 156,
+        "max_hr": 182,
+        "avg_speed_ms": 2.57,
+        "max_speed_ms": 4.10,
+        "avg_vam_vertical_speed_mh": 575.0,
+        "telemetry_points_count": 7200,
+        "hr_zones_distribution": {
+          "Z1": 0.05,
+          "Z2": 0.25,
+          "Z3": 0.45,
+          "Z4": 0.20,
+          "Z5": 0.05
+        }
+      }
+    },
+    {
+      "source_type": "GPX",
+      "sport_category": "ROAD_RUN",
+      "days_ago": 4,
+      "duration_seconds": 3600,
+      "distance_meters": 12000.0,
+      "elevation_gain_meters": 85.0,
+      "tss_score": 75.0,
+      "session_rpe": 6,
+      "foster_load": 360.0,
+      "notes": "Rodaje controlado en asfalto, cadencia sostenida a 178 spm.",
+      "telemetry_summary": {
+        "avg_hr": 142,
+        "max_hr": 161,
+        "avg_speed_ms": 3.33,
+        "max_speed_ms": 4.05,
+        "avg_vam_vertical_speed_mh": 85.0,
+        "telemetry_points_count": 3600,
+        "hr_zones_distribution": {
+          "Z1": 0.10,
+          "Z2": 0.65,
+          "Z3": 0.20,
+          "Z4": 0.05,
+          "Z5": 0.0
+        }
+      }
+    },
+    {
+      "source_type": "MANUAL",
+      "sport_category": "STRENGTH",
+      "days_ago": 5,
+      "duration_seconds": 3000,
+      "distance_meters": 0.0,
+      "elevation_gain_meters": 0.0,
+      "tss_score": 50.0,
+      "session_rpe": 7,
+      "foster_load": 350.0,
+      "notes": "Sentadilla trasera pesada, puente de glúteo y estabilidad de tobillos.",
+      "telemetry_summary": null
+    }
+  ]
+}

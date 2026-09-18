@@ -1,0 +1,67 @@
+{
+  "user": {
+    "email": "caco.debutante@paramourbano.org",
+    "full_name": "Lucía Morales",
+    "password": "Password123!"
+  },
+  "profile": {
+    "experience_level": "BEGINNER",
+    "age": 35,
+    "weight_kg": 72.0,
+    "rest_hr": 68,
+    "max_hr": 184,
+    "vdot_score": 34.0,
+    "current_ctl": 12.0,
+    "current_atl": 15.0
+  },
+  "goal": {
+    "discipline": "ROAD_RUNNING",
+    "subgoal_type": "FIRST_5K",
+    "custom_distance_km": 5.0,
+    "target_elevation_gain_m": 25.0,
+    "mountain_altitude_category": null,
+    "weeks_ahead": 8,
+    "available_days_per_week": 3
+  },
+  "activities": [
+    {
+      "source_type": "MANUAL",
+      "sport_category": "ROAD_RUN",
+      "days_ago": 1,
+      "duration_seconds": 1800,
+      "distance_meters": 3200.0,
+      "elevation_gain_meters": 15.0,
+      "tss_score": 25.0,
+      "session_rpe": 4,
+      "foster_load": 120.0,
+      "notes": "Sesión CaCo (Caminar 2 min / Correr 2 min) x 7 repeticiones + calentamiento.",
+      "telemetry_summary": null
+    },
+    {
+      "source_type": "MANUAL",
+      "sport_category": "ROAD_RUN",
+      "days_ago": 3,
+      "duration_seconds": 1500,
+      "distance_meters": 2600.0,
+      "elevation_gain_meters": 10.0,
+      "tss_score": 20.0,
+      "session_rpe": 4,
+      "foster_load": 100.0,
+      "notes": "Segunda sesión CaCo adaptativa en parque urbano plano.",
+      "telemetry_summary": null
+    },
+    {
+      "source_type": "MANUAL",
+      "sport_category": "STRENGTH",
+      "days_ago": 5,
+      "duration_seconds": 1800,
+      "distance_meters": 0.0,
+      "elevation_gain_meters": 0.0,
+      "tss_score": 15.0,
+      "session_rpe": 3,
+      "foster_load": 90.0,
+      "notes": "Movilidad articular, ejercicios con bandas y activación de glúteo medio.",
+      "telemetry_summary": null
+    }
+  ]
+}

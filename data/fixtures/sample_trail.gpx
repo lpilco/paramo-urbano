@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Páramo Urbano Fixtures" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Pichincha Skyrace</name>
+    <type>trail_run</type>
+    <trkseg>
+      <trkpt lat="-0.180653" lon="-78.467838">
+        <ele>2850.0</ele>
+        <time>2026-09-18T06:00:00Z</time>
+        <extensions>
+          <hr>142</hr>
+          <cad>84</cad>
+        </extensions>
+      </trkpt>
+      <trkpt lat="-0.180700" lon="-78.467900">
+        <ele>2855.5</ele>
+        <time>2026-09-18T06:00:05Z</time>
+        <extensions>
+          <hr>148</hr>
+          <cad>86</cad>
+        </extensions>
+      </trkpt>
+      <trkpt lat="-0.180750" lon="-78.468000">
+        <ele>2862.0</ele>
+        <time>2026-09-18T06:00:10Z</time>
+        <extensions>
+          <hr>155</hr>
+          <cad>88</cad>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

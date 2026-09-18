@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gpx [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>&xxe;</name>
+    <trkseg>
+      <trkpt lat="-0.18" lon="-78.46"><ele>2800</ele><time>2026-09-18T06:00:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
